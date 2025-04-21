@@ -1,0 +1,233 @@
+import { DataProvider } from "react-admin";
+import { useCustomApiToken } from "./hooks/useCustomApiToken";
+import { DomainsApi, Configuration } from "./api-client";
+
+// Create a wrapper function that returns a data provider with the token
+export const createDataProvider = (baseUrl: string) => {
+  // Return a function that creates a data provider with the current token
+  return () => {
+    // Get the current token
+    const { token, error, isLoading } = useCustomApiToken();
+
+    // Initialize API client configuration
+    const apiConfig = new Configuration({
+      basePath: baseUrl,
+      headers: {
+        Authorization: token ? `Bearer ${token}` : "",
+      },
+    });
+
+    // Initialize the API client
+    const apiClient = new DomainsApi(apiConfig);
+
+    // Create a base data provider with all required methods
+    const createBaseDataProvider = (errorMessage: string): DataProvider => ({
+      getList: () => Promise.reject(new Error(errorMessage)),
+      getOne: () => Promise.reject(new Error(errorMessage)),
+      create: () => Promise.reject(new Error(errorMessage)),
+      update: () => Promise.reject(new Error(errorMessage)),
+      delete: () => Promise.reject(new Error(errorMessage)),
+      getMany: () => Promise.reject(new Error(errorMessage)),
+      getManyReference: () => Promise.reject(new Error(errorMessage)),
+      updateMany: () => Promise.reject(new Error(errorMessage)),
+      deleteMany: () => Promise.reject(new Error(errorMessage)),
+    });
+
+    // If we're still loading, return a data provider that will wait
+    if (isLoading) {
+      return createBaseDataProvider("Waiting for API token to load...");
+    }
+
+    // If there's an error getting the token, throw it
+    if (error) {
+      throw new Error(`Failed to get API token: ${error}`);
+    }
+
+    // If we don't have a token yet, return a data provider that will fail with a clear error
+    if (!token) {
+      return createBaseDataProvider("API token not available");
+    }
+
+    // Return a data provider that uses our API client
+    return {
+      getList: async (resource: string, params: any) => {
+        try {
+          const response = await apiClient.apiV1DomainsGet();
+
+          // Filter out any entries without a domain (which we use as id)
+          const validData = (response.data || [])
+            .filter((domain) => domain.domain) // Only include entries with a domain
+            .map((domain) => ({
+              ...domain,
+              id: domain.domain!, // We can safely use ! here because of the filter
+            }));
+
+          return {
+            data: validData,
+            total: validData.length,
+          };
+        } catch (error) {
+          console.error("Error fetching domains:", error);
+          throw error;
+        }
+      },
+
+      getOne: async (resource: string, params: any) => {
+        try {
+          const response = await apiClient.apiV1DomainsDomainGet({
+            domain: params.id,
+          });
+
+          if (!response.data?.domain) {
+            throw new Error("Domain not found");
+          }
+
+          return {
+            data: {
+              ...response.data,
+              id: response.data.domain,
+            },
+          };
+        } catch (error) {
+          console.error("Error fetching domain:", error);
+          throw error;
+        }
+      },
+
+      create: async (resource: string, params: any) => {
+        try {
+          const response = await apiClient.apiV1DomainsPost({
+            request: params.data,
+          });
+          return {
+            data: response,
+          };
+        } catch (error) {
+          console.error("Error creating domain:", error);
+          throw error;
+        }
+      },
+
+      update: async (resource: string, params: any) => {
+        try {
+          const response = await apiClient.apiV1DomainsDomainPut({
+            domain: params.id,
+            request: params.data,
+          });
+          return {
+            data: response,
+          };
+        } catch (error) {
+          console.error("Error updating domain:", error);
+          throw error;
+        }
+      },
+
+      delete: async (resource: string, params: any) => {
+        try {
+          await apiClient.apiV1DomainsDomainDelete({
+            domain: params.id,
+          });
+          return {
+            data: params.previousData,
+          };
+        } catch (error) {
+          console.error("Error deleting domain:", error);
+          throw error;
+        }
+      },
+
+      // Add the missing methods required by the DataProvider interface
+      getMany: async (resource: string, params: any) => {
+        try {
+          const response = await apiClient.apiV1DomainsGet();
+          const filteredData = (response.data || [])
+            .filter(
+              (domain) => domain.domain && params.ids.includes(domain.domain),
+            )
+            .map((domain) => ({
+              ...domain,
+              id: domain.domain!, // We can safely use ! here because of the filter
+            }));
+
+          return {
+            data: filteredData,
+          };
+        } catch (error) {
+          console.error("Error fetching many domains:", error);
+          throw error;
+        }
+      },
+
+      getManyReference: async (resource: string, params: any) => {
+        try {
+          const response = await apiClient.apiV1DomainsGet();
+
+          const validData = (response.data || [])
+            .filter((domain) => domain.domain) // Only include entries with a domain
+            .map((domain) => ({
+              ...domain,
+              id: domain.domain!, // We can safely use ! here because of the filter
+            }));
+
+          return {
+            data: validData,
+            total: validData.length,
+          };
+        } catch (error) {
+          console.error("Error fetching many reference:", error);
+          throw error;
+        }
+      },
+
+      updateMany: async (resource: string, params: any) => {
+        try {
+          // This is a simplified implementation
+          // In a real app, you might want to implement this differently
+          const { ids, data } = params;
+
+          // For each ID, update the domain
+          const updatePromises = ids.map((id: string) =>
+            apiClient.apiV1DomainsDomainPut({
+              domain: id,
+              request: data,
+            }),
+          );
+
+          await Promise.all(updatePromises);
+
+          return {
+            data: ids,
+          };
+        } catch (error) {
+          console.error("Error updating many domains:", error);
+          throw error;
+        }
+      },
+
+      deleteMany: async (resource: string, params: any) => {
+        try {
+          // This is a simplified implementation
+          // In a real app, you might want to implement this differently
+          const { ids } = params;
+
+          // For each ID, delete the domain
+          const deletePromises = ids.map((id: string) =>
+            apiClient.apiV1DomainsDomainDelete({
+              domain: id,
+            }),
+          );
+
+          await Promise.all(deletePromises);
+
+          return {
+            data: ids,
+          };
+        } catch (error) {
+          console.error("Error deleting many domains:", error);
+          throw error;
+        }
+      },
+    };
+  };
+};
