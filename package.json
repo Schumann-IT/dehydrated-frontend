@@ -8,7 +8,7 @@
     "type-check": "tsc --noEmit",
     "lint": "eslint --fix --ext .js,.jsx,.ts,.tsx ./src",
     "format": "prettier --write ./src",
-    "gen-client": "openapi-generator-cli generate -i ../dehydrated-api-go/docs/swagger.yaml -g typescript-fetch -o src/api-client"
+    "gen-client": "openapi-generator-cli generate -i ../dehydrated-api-go/docs/swagger.yaml -g typescript-fetch -o src/data-providers/domains/client"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

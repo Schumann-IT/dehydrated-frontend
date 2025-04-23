@@ -7,7 +7,11 @@ import reactHooks from "eslint-plugin-react-hooks";
 import globals from "globals";
 
 export default defineConfig([
-  globalIgnores(["**/node_modules", "**/dist"]),
+  globalIgnores([
+    "**/node_modules",
+    "**/dist",
+    "**/src/data-providers/*/client",
+  ]),
   {
     name: "eslint-js-recommended-rules",
     plugins: {
