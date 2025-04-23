@@ -129,7 +129,7 @@ export const useDataProvider = (): DataProvider => {
     };
 
     initializeMsal();
-  }, []);
+  }, [isInitialized]);
 
   return React.useMemo(() => {
     return createCombinedProvider(myMSALObj);
