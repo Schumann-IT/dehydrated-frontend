@@ -8,11 +8,10 @@ import {
   Identifier,
   RaRecord,
   UpdateManyParams,
-  UpdateManyResult,
   UpdateParams,
 } from "react-admin";
-import { Domain } from "./types";
-import { transformElement } from "./transformer";
+import { Domain } from "./types.ts";
+import { transformElement } from "./transformer.ts";
 import {
   DomainsApi,
   Configuration,
@@ -252,7 +251,7 @@ export const create = (
         }
       }
 
-      return { data: updated } as unknown as UpdateManyResult<RecordType>;
+      return { data: updated.map((record) => record.id) as RecordType["id"][] };
     },
   };
 };

@@ -1,31 +1,7 @@
-import { msalAuthProvider } from "ra-auth-msal";
-import { PublicClientApplication } from "@azure/msal-browser";
-import { msalConfig } from "./config";
-import React, { useEffect, useState } from "react";
-import { useNavigate, Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { initializeMsal } from "@/auth";
 import { useMsal } from "@azure/msal-react";
-
-export const myMSALObj = new PublicClientApplication(msalConfig);
-
-// Initialize MSAL
-export const initializeMsal = async () => {
-  await myMSALObj.initialize();
-};
-
-const baseProvider = msalAuthProvider({
-  msalInstance: myMSALObj,
-});
-
-export const provider = {
-  ...baseProvider,
-  logout: async (params = {}) => {
-    // First clear the local auth state
-    await baseProvider.logout(params);
-    // Then redirect to the landing page
-    window.location.href = "/";
-    return Promise.resolve();
-  },
-};
+import { Navigate, useNavigate } from "react-router-dom";
 
 // MSAL Initialization wrapper
 export const MsalInitializer = ({
@@ -95,4 +71,4 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   }
 
   return <>{children}</>;
-}; 
+};

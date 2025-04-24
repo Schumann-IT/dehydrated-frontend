@@ -1,11 +1,11 @@
 import { DataProvider } from "react-admin";
 
 // Import provider factories
-import { createProvider as createDomainsProvider } from "./resources/domains";
+import { createDomainsProvider } from "@/resources/domains";
 import { IPublicClientApplication } from "@azure/msal-browser";
 
 // Create a combined data provider that routes requests to the appropriate provider
-export const createCombinedProvider = (
+export const dataProvider = (
   msalInstance?: IPublicClientApplication,
 ): DataProvider => {
   // Create all providers

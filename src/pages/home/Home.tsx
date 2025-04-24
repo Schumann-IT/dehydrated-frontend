@@ -1,5 +1,5 @@
 import { useMsal } from "@azure/msal-react";
-import { loginRequest } from "../auth-providers/msal/authConfig";
+import { loginRequest } from "@/authConfig.ts";
 import { Box, Button, Container, Typography } from "@mui/material";
 
 export const Home = () => {

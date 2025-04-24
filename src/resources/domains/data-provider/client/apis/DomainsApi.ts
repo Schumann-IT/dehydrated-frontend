@@ -12,13 +12,13 @@
  * Do not edit the class manually.
  */
 
-import * as runtime from "../runtime";
+import * as runtime from "../runtime.ts";
 import type {
   ModelCreateDomainRequest,
   ModelDomainResponse,
   ModelDomainsResponse,
   ModelUpdateDomainRequest,
-} from "../models/index";
+} from "../models";
 import {
   ModelCreateDomainRequestFromJSON,
   ModelCreateDomainRequestToJSON,
@@ -28,7 +28,7 @@ import {
   ModelDomainsResponseToJSON,
   ModelUpdateDomainRequestFromJSON,
   ModelUpdateDomainRequestToJSON,
-} from "../models/index";
+} from "../models";
 
 export interface ApiV1DomainsDomainDeleteRequest {
   domain: string;

@@ -12,14 +12,14 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from "../runtime";
-import type { ModelDomainEntry } from "./ModelDomainEntry";
+import { mapValues } from "../runtime.ts";
+import type { ModelDomainEntry } from "./ModelDomainEntry.ts";
 import {
   ModelDomainEntryFromJSON,
   ModelDomainEntryFromJSONTyped,
   ModelDomainEntryToJSON,
   ModelDomainEntryToJSONTyped,
-} from "./ModelDomainEntry";
+} from "./ModelDomainEntry.ts";
 
 /**
  *

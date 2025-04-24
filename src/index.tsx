@@ -1,8 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { MsalProvider } from "@azure/msal-react";
-import { App } from "./App";
-import { myMSALObj } from "./auth-providers/msal";
+import { App } from "@/pages/App";
+import { myMSALObj } from "@/auth";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

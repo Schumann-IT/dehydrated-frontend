@@ -2,21 +2,21 @@ import { Admin, Resource } from "react-admin";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LoginPage } from "ra-auth-msal";
 import {
-  myMSALObj,
-  provider as msalProvider,
   MsalInitializer,
   AuthCallback,
   ProtectedRoute,
-} from "./features/auth";
-import { Dashboard } from "./pages/dashboard";
+  myMSALObj,
+  provider as msalProvider,
+} from "@/auth";
+import { Dashboard } from "@/pages/dashboard";
 import {
   DomainList,
   DomainShow,
   DomainEdit,
   DomainCreate,
-} from "./features/domains/components";
-import { Home } from "./pages/Home.tsx";
-import { createCombinedProvider } from "./dataProvider";
+} from "@/resources/domains";
+import { Home } from "@/pages/home";
+import { dataProvider } from "@/dataProvider.ts";
 
 export const App = () => {
   return (
@@ -30,7 +30,7 @@ export const App = () => {
             element={
               <ProtectedRoute>
                 <Admin
-                  dataProvider={createCombinedProvider(myMSALObj)}
+                  dataProvider={dataProvider(myMSALObj)}
                   authProvider={msalProvider}
                   loginPage={LoginPage}
                   dashboard={Dashboard}

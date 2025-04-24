@@ -1,8 +1,4 @@
-// Components
-export { DomainList } from "./components/list";
-export { DomainShow } from "./components/show";
-export { DomainEdit } from "./components/edit";
-export { DomainCreate } from "./components/create";
-
-// Data Provider
-export { create as createProvider } from "./data-provider/provider.ts";
+export { create as createDomainsProvider } from "./data-provider/provider.ts";
+export * from "./components";
+export * from "./data-provider/provider.ts";
+export * from "./data-provider/types.ts";
