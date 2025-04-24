@@ -7,14 +7,14 @@ import {
   MsalInitializer,
   AuthCallback,
   ProtectedRoute,
-} from "./auth-providers/msal";
+} from "./features/auth";
 import { Dashboard } from "./pages/dashboard";
 import {
   DomainList,
   DomainShow,
   DomainEdit,
   DomainCreate,
-} from "./resources/domains";
+} from "./features/domains/components";
 import { Home } from "./pages/Home.tsx";
 import { createCombinedProvider } from "./dataProvider";
 
