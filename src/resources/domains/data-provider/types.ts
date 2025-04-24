@@ -1,7 +1,6 @@
-import { BaseRecord } from "../registry";
 import { ModelDomainEntry } from "./client";
 
-export interface Domain extends BaseRecord, ModelDomainEntry {
+export interface Domain extends ModelDomainEntry {
   id: string; // using domains as id
 }
 

@@ -1,33 +1,54 @@
 import { Admin, Resource } from "react-admin";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LoginPage } from "ra-auth-msal";
-import { provider as msalProvider } from "./auth-providers/msal";
-import { Dashboard } from "./Dashboard";
-import { useDataProvider } from "./data-providers";
-import { DomainList } from "./resources/domains/DomainList.tsx";
-import { DomainShow } from "./resources/domains/DomainShow.tsx";
-import { DomainEdit } from "./resources/domains/DomainEdit.tsx";
-import { DomainCreate } from "./resources/domains/DomainCreate.tsx";
+import {
+  myMSALObj,
+  provider as msalProvider,
+  MsalInitializer,
+  AuthCallback,
+  ProtectedRoute,
+} from "./auth-providers/msal";
+import { Dashboard } from "./pages/dashboard";
+import {
+  DomainList,
+  DomainShow,
+  DomainEdit,
+  DomainCreate,
+} from "./resources/domains";
+import { Home } from "./pages/Home.tsx";
+import { createCombinedProvider } from "./dataProvider";
 
 export const App = () => {
-  const dataProvider = useDataProvider();
-
   return (
-    <BrowserRouter>
-      <Admin
-        dataProvider={dataProvider}
-        authProvider={msalProvider}
-        loginPage={LoginPage}
-        dashboard={Dashboard}
-      >
-        <Resource
-          name="domains"
-          list={DomainList}
-          edit={DomainEdit}
-          show={DomainShow}
-          create={DomainCreate}
-        />
-      </Admin>
-    </BrowserRouter>
+    <MsalInitializer>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/auth-callback" element={<AuthCallback />} />
+          <Route
+            path="/admin/*"
+            element={
+              <ProtectedRoute>
+                <Admin
+                  dataProvider={createCombinedProvider(myMSALObj)}
+                  authProvider={msalProvider}
+                  loginPage={LoginPage}
+                  dashboard={Dashboard}
+                  basename="/admin"
+                >
+                  <Resource
+                    name="domains"
+                    list={DomainList}
+                    edit={DomainEdit}
+                    show={DomainShow}
+                    create={DomainCreate}
+                  />
+                </Admin>
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </BrowserRouter>
+    </MsalInitializer>
   );
 };

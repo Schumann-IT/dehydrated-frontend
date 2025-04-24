@@ -1,15 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { DataProvider, RaRecord } from "react-admin";
+import { DataProvider } from "react-admin";
 
 // Import provider factories
-import { createProvider as createDomainsProvider } from "./domains/provider";
+import { createProvider as createDomainsProvider } from "./resources/domains";
 import { IPublicClientApplication } from "@azure/msal-browser";
-import { myMSALObj } from "../auth-providers/msal";
-
-// Define the base interface for all resources
-export interface BaseRecord extends RaRecord {
-  id: string;
-}
 
 // Create a combined data provider that routes requests to the appropriate provider
 export const createCombinedProvider = (
@@ -107,31 +100,4 @@ export const createCombinedProvider = (
       return provider.updateMany(resource, params);
     },
   };
-};
-
-// Create a hook to get the combined provider
-export const useDataProvider = (): DataProvider => {
-  const [isInitialized, setIsInitialized] = useState<boolean>(false);
-
-  // Initialize MSAL
-  useEffect(() => {
-    const initializeMsal = async () => {
-      if (isInitialized) {
-        return;
-      }
-
-      try {
-        await myMSALObj.initialize();
-        setIsInitialized(true);
-      } catch (error) {
-        console.error("Error initializing MSAL:", error);
-      }
-    };
-
-    initializeMsal();
-  }, [isInitialized]);
-
-  return React.useMemo(() => {
-    return createCombinedProvider(myMSALObj);
-  }, []);
 };

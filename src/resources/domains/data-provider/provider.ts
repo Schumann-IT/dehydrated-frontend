@@ -34,7 +34,7 @@ const getApiClient = (token: string | null) => {
 };
 
 // Create a provider factory that takes an optional MSAL object
-export const createProvider = (
+export const create = (
   msalInstance?: IPublicClientApplication,
 ): Partial<DataProvider> => {
   // Function to get the current token
@@ -93,9 +93,15 @@ export const createProvider = (
       // Sort data
       data.sort((a, b) => {
         if (order === "ASC") {
-          return a[field] > b[field] ? 1 : -1;
+          return (a[field as keyof Domain] ?? "") >
+            (b[field as keyof Domain] ?? "")
+            ? 1
+            : -1;
         }
-        return a[field] < b[field] ? 1 : -1;
+        return (a[field as keyof Domain] ?? "") <
+          (b[field as keyof Domain] ?? "")
+          ? 1
+          : -1;
       });
 
       // Paginate data

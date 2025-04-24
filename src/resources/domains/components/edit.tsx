@@ -17,7 +17,7 @@ export const DomainEdit = () => {
         <BooleanInput source="enabled" />
         <ArrayInput source="alternativeNames" label="Alternative Names">
           <SimpleFormIterator>
-            <TextInput />
+            <TextInput source="" />
           </SimpleFormIterator>
         </ArrayInput>
         <TextInput source="comment" multiline rows={4} />

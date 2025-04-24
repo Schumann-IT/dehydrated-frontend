@@ -6,4 +6,4 @@ export const Layout = ({ children }: { children: ReactNode }) => (
     {children}
     <CheckForApplicationUpdate />
   </RALayout>
-);
+); 

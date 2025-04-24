@@ -16,3 +16,8 @@ export const msalConfig: Configuration = {
     storeAuthStateInCookie: false, // Set this to "true" if you are having issues on IE11 or Edge
   },
 };
+
+// Add login request configuration
+export const loginRequest = {
+  scopes: ["User.Read"],
+};
