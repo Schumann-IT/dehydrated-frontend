@@ -9,7 +9,7 @@
     "lint": "eslint --fix --ext .js,.jsx,.ts,.tsx ./src",
     "format": "prettier --write ./src",
     "dev-prepare": "npm run gen:domains-client && npm run gen:theme-modules",
-    "gen:domains-client": "openapi-generator-cli generate -i ../dehydrated-api-go/docs/swagger.yaml -g typescript-fetch -o src/resources/domains/data-provider/client",
+    "gen:domains-client": "openapi-generator-cli generate -i https://raw.githubusercontent.com/Schumann-IT/dehydrated-api-go/refs/heads/main/docs/swagger.yaml -g typescript-fetch -o src/resources/domains/data-provider/client",
     "gen:theme-modules": "touch src/theme/modules.ts && node scripts/preload-theme-modules.js"
   },
   "dependencies": {
