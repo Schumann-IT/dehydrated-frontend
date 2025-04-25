@@ -1,9 +1,11 @@
 import { useMsal } from "@azure/msal-react";
 import { loginRequest } from "@/authConfig.ts";
-import { Box, Button, Container, Typography } from "@mui/material";
+import { Box, Button, Container, Typography, useTheme } from "@mui/material";
+import { CustomThemeOptions } from "@/theme";
 
 export const Home = () => {
   const { instance } = useMsal();
+  const theme = useTheme() as CustomThemeOptions;
 
   const handleLogin = () => {
     instance.loginRedirect(loginRequest).catch((error) => {
@@ -12,33 +14,45 @@ export const Home = () => {
   };
 
   return (
-    <Container maxWidth="sm">
-      <Box
-        sx={{
-          minHeight: "100vh",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          textAlign: "center",
-          gap: 4,
-        }}
-      >
-        <Typography variant="h2" component="h1" gutterBottom>
-          Dehydrated
-        </Typography>
-        <Typography variant="h5" color="text.secondary" paragraph>
-          Your DNS Management Solution
-        </Typography>
-        <Button
-          variant="contained"
-          size="large"
-          onClick={handleLogin}
-          sx={{ mt: 4 }}
+    <Box
+      sx={{
+        minHeight: "100vh",
+        backgroundImage: `url(${theme.assets?.wallpaper})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <Container maxWidth="sm" sx={{ width: "auto" }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            textAlign: "center",
+            gap: 4,
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
+            backdropFilter: "blur(8px)",
+            padding: 4,
+            borderRadius: 2,
+          }}
         >
-          Login with Microsoft
-        </Button>
-      </Box>
-    </Container>
+          <Typography variant="h2" component="h1" gutterBottom>
+            {theme.texts?.title}
+          </Typography>
+          <Button
+            variant="contained"
+            size="large"
+            onClick={handleLogin}
+            sx={{ mt: 4 }}
+          >
+            Login
+          </Button>
+        </Box>
+      </Container>
+    </Box>
   );
 };
