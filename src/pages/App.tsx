@@ -23,6 +23,7 @@ import { useEffect, useState } from "react";
 import { getTheme } from "@/theme";
 
 export const App = () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [mode, setMode] = useState<"light" | "dark">(
     import.meta.env.VITE_THEME_MODE || "light",
   );
