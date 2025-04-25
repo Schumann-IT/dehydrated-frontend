@@ -32,9 +32,6 @@ jobs:
     - name: Generate files
       run: npm run dev-prepare
 
-    - name: Run CI
-      run: npm ci
-
     - name: Type check
       run: npm run type-check
     
