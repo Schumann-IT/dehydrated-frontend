@@ -10,7 +10,7 @@ export default defineConfig([
   globalIgnores([
     "**/node_modules",
     "**/dist",
-    "**/src/data-providers/*/client",
+    "src/theme/modules.ts",
   ]),
   {
     name: "eslint-js-recommended-rules",
