@@ -33,7 +33,7 @@ jobs:
       run: npm run dev-prepare
 
     - name: Run CI
-      run: npm run ci
+      run: npm ci
 
     - name: Type check
       run: npm run type-check
