@@ -35,7 +35,9 @@ export const App = () => {
   useEffect(() => {
     const loadThemes = async () => {
       try {
-        const loadedThemes = await getTheme("default");
+        const loadedThemes = await getTheme(
+          import.meta.env.VITE_THEME_NAME || "default",
+        );
         setThemes(loadedThemes);
       } catch (error) {
         console.error("Failed to load theme:", error);
