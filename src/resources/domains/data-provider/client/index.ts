@@ -1,5 +1,5 @@
 /* tslint:disable */
-
-export * from "./runtime.ts";
-export * from "./apis";
-export * from "./models";
+/* eslint-disable */
+export * from './runtime';
+export * from './apis/index';
+export * from './models/index';

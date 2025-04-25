@@ -1,3 +1,3 @@
 /* tslint:disable */
-
-export * from "./DomainsApi.ts";
+/* eslint-disable */
+export * from './DomainsApi';

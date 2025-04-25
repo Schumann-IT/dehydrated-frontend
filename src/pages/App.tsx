@@ -17,27 +17,39 @@ import {
 } from "@/resources/domains";
 import { Home } from "@/pages/home";
 import { dataProvider } from "@/dataProvider.ts";
-import { ThemeProvider } from "@mui/material";
-import CssBaseline from "@mui/material/CssBaseline";
-import { useMemo, useState } from "react";
-import { getTheme, ThemeVariant } from "@/theme";
-
-// Get theme variant from environment variable, default to "standard"
-const themeVariant = (import.meta.env.VITE_THEME_VARIANT ||
-  "standard") as ThemeVariant;
+import { Theme, ThemeProvider } from "@mui/material";
+import { CssBaseline } from "@mui/material";
+import { useEffect, useState } from "react";
+import { getTheme } from "@/theme";
 
 export const App = () => {
-  // Default to light theme
-  const [mode, setMode] = useState<"light" | "dark">("light");
+  const [mode, setMode] = useState<"light" | "dark">(
+    import.meta.env.VITE_THEME_MODE || "light",
+  );
+  const [themes, setThemes] = useState<{
+    light: Theme;
+    dark: Theme;
+  }>();
 
-  // Get theme configuration
-  const themeConfig = getTheme(themeVariant);
+  useEffect(() => {
+    const loadThemes = async () => {
+      try {
+        const loadedThemes = await getTheme("default");
+        setThemes(loadedThemes);
+      } catch (error) {
+        console.error("Failed to load theme:", error);
+      }
+    };
 
-  // Create a theme based on the current mode
-  const theme = useMemo(() => themeConfig[mode], [mode, themeConfig]);
+    loadThemes();
+  }, []);
+
+  if (!themes) {
+    return null; // or a loading spinner
+  }
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={themes[mode]}>
       <CssBaseline />
       <MsalInitializer>
         <BrowserRouter>
@@ -54,7 +66,8 @@ export const App = () => {
                     loginPage={LoginPage}
                     dashboard={Dashboard}
                     basename="/admin"
-                    theme={theme}
+                    lightTheme={themes["light"]}
+                    darkTheme={themes["dark"]}
                   >
                     <Resource
                       name="domains"

@@ -1,10 +1,11 @@
 import { useMsal } from "@azure/msal-react";
 import { loginRequest } from "@/authConfig.ts";
 import { Box, Button, Container, Typography, useTheme } from "@mui/material";
+import { CustomThemeOptions } from "@/theme";
 
 export const Home = () => {
   const { instance } = useMsal();
-  const theme = useTheme();
+  const theme = useTheme() as CustomThemeOptions;
 
   const handleLogin = () => {
     instance.loginRedirect(loginRequest).catch((error) => {
@@ -16,7 +17,7 @@ export const Home = () => {
     <Box
       sx={{
         minHeight: "100vh",
-        backgroundImage: `url(${theme.assets.wallpaper})`,
+        backgroundImage: `url(${theme.assets?.wallpaper})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
@@ -40,7 +41,7 @@ export const Home = () => {
           }}
         >
           <Typography variant="h2" component="h1" gutterBottom>
-            {theme.texts.title}
+            {theme.texts?.title}
           </Typography>
           <Button
             variant="contained"
@@ -48,7 +49,7 @@ export const Home = () => {
             onClick={handleLogin}
             sx={{ mt: 4 }}
           >
-            Login with Microsoft
+            Login
           </Button>
         </Box>
       </Container>
