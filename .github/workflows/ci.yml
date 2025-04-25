@@ -24,10 +24,13 @@ jobs:
         cache: 'npm'
     
     - name: Install dependencies
-      run: npm install
+      run: npm install --legacy-peer-deps
     
-    - name: Install dependencies
+    - name: Generate files
       run: npm run dev-prepare
+
+    - name: Run CI
+      run: npm run ci
 
     - name: Type check
       run: npm run type-check
