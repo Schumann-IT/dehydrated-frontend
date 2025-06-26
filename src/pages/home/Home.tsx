@@ -3,14 +3,23 @@ import { loginRequest } from "@/authConfig.ts";
 import { Box, Button, Container, Typography, useTheme } from "@mui/material";
 import { CustomThemeOptions } from "@/theme";
 
+// Check if MSAL is enabled
+const isMsalEnabled = import.meta.env.VITE_ENABLE_MSAL === "true";
+
 export const Home = () => {
   const { instance } = useMsal();
   const theme = useTheme() as CustomThemeOptions;
 
   const handleLogin = () => {
-    instance.loginRedirect(loginRequest).catch((error) => {
-      console.error("Login failed:", error);
-    });
+    if (isMsalEnabled && instance) {
+      instance.loginRedirect(loginRequest).catch((error) => {
+        console.error("Login failed:", error);
+      });
+    }
+  };
+
+  const handleGoToAdmin = () => {
+    window.location.href = "/admin";
   };
 
   return (
@@ -43,14 +52,25 @@ export const Home = () => {
           <Typography variant="h2" component="h1" gutterBottom>
             {theme.texts?.title}
           </Typography>
-          <Button
-            variant="contained"
-            size="large"
-            onClick={handleLogin}
-            sx={{ mt: 4 }}
-          >
-            Login
-          </Button>
+          {isMsalEnabled ? (
+            <Button
+              variant="contained"
+              size="large"
+              onClick={handleLogin}
+              sx={{ mt: 4 }}
+            >
+              Login
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              size="large"
+              onClick={handleGoToAdmin}
+              sx={{ mt: 4 }}
+            >
+              Go to Admin
+            </Button>
+          )}
         </Box>
       </Container>
     </Box>

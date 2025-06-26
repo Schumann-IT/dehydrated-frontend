@@ -16,6 +16,51 @@ Start the application in development mode by running:
 npm run dev
 ```
 
+## Authentication
+
+The application supports two authentication modes:
+
+### 1. No-Auth Development Mode (Default)
+
+For development and testing, the app can run without authentication:
+
+```bash
+# Set this in your .env file or environment
+VITE_ENABLE_MSAL=false
+```
+
+In no-auth mode:
+- No login required
+- Direct access to admin interface
+- Landing page shows "Go to Admin" button
+- Perfect for development and testing
+
+### 2. MSAL Authentication Mode
+
+For production use with Azure AD authentication:
+
+```bash
+# Set this in your .env file or environment
+VITE_ENABLE_MSAL=true
+VITE_MSAL_CLIENT_ID=your-azure-ad-client-id
+VITE_MSAL_AUTHORITY=https://login.microsoftonline.com/your-tenant-id
+VITE_APP_BASE_URI=http://localhost:5173
+```
+
+In MSAL mode:
+- Azure AD login required
+- Protected admin routes
+- Landing page shows "Login" button
+- Full authentication flow with redirects
+
+### Environment Configuration
+
+Copy `env.example` to `.env` and configure your preferred authentication mode:
+
+```bash
+cp env.example .env
+```
+
 ## Production
 
 Build the application in production mode by running:

@@ -4,24 +4,48 @@ import { msalConfig } from "@/authConfig";
 
 export * from "./components";
 
-export const myMSALObj = new PublicClientApplication(msalConfig);
+// Check if MSAL is enabled via environment variable
+const isMsalEnabled = import.meta.env.VITE_ENABLE_MSAL === "true";
+const isDevelopment = import.meta.env.DEV;
 
-// Initialize MSAL
+export const myMSALObj = isMsalEnabled ? new PublicClientApplication(msalConfig) : null;
+
+// Initialize MSAL only if enabled
 export const initializeMsal = async () => {
-  await myMSALObj.initialize();
+  if (isMsalEnabled && myMSALObj) {
+    await myMSALObj.initialize();
+  }
 };
 
-const baseProvider = msalAuthProvider({
-  msalInstance: myMSALObj,
-});
+// Create MSAL provider only if enabled
+const baseProvider = isMsalEnabled && myMSALObj 
+  ? msalAuthProvider({
+      msalInstance: myMSALObj,
+    })
+  : null;
 
-export const provider = {
-  ...baseProvider,
-  logout: async (params = {}) => {
-    // First clear the local auth state
-    await baseProvider.logout(params);
-    // Then redirect to the landing page
-    window.location.href = "/";
-    return Promise.resolve();
-  },
+// No-auth provider for development
+const noAuthProvider = {
+  login: async () => Promise.resolve(),
+  logout: async () => Promise.resolve(),
+  checkError: async () => Promise.resolve(),
+  checkAuth: async () => Promise.resolve(),
+  getPermissions: async () => Promise.resolve(),
+  getIdentity: async () => Promise.resolve({
+    id: "dev-user",
+    fullName: "Development User",
+  }),
 };
+
+export const provider = isMsalEnabled && baseProvider 
+  ? {
+      ...baseProvider,
+      logout: async (params = {}) => {
+        // First clear the local auth state
+        await baseProvider.logout(params);
+        // Then redirect to the landing page
+        window.location.href = "/";
+        return Promise.resolve();
+      },
+    }
+  : noAuthProvider;
