@@ -24,6 +24,7 @@ export const DomainList = () => (
   <List actions={<ListActions />}>
     <Datagrid bulkActionButtons={<BulkActionButtons />} rowClick="show">
       <TextField source="domain" />
+      <TextField source="alias" />
       <BooleanField source="enabled" />
       <TextField source="comment" />
       <EditButton />

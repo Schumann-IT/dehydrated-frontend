@@ -22,6 +22,9 @@ import { CssBaseline } from "@mui/material";
 import { useEffect, useState } from "react";
 import { getTheme } from "@/theme";
 
+// Check if MSAL is enabled
+const isMsalEnabled = import.meta.env.VITE_ENABLE_MSAL === "true";
+
 export const App = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [mode, setMode] = useState<"light" | "dark">(
@@ -51,22 +54,38 @@ export const App = () => {
     return null; // or a loading spinner
   }
 
+  // Conditional MSAL wrapper component
+  const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
+    if (isMsalEnabled) {
+      return <MsalInitializer>{children}</MsalInitializer>;
+    }
+    return <>{children}</>;
+  };
+
+  // Conditional protected route component
+  const ConditionalProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+    if (isMsalEnabled) {
+      return <ProtectedRoute>{children}</ProtectedRoute>;
+    }
+    return <>{children}</>;
+  };
+
   return (
     <ThemeProvider theme={themes[mode]}>
       <CssBaseline />
-      <MsalInitializer>
+      <AuthWrapper>
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/auth-callback" element={<AuthCallback />} />
+            {isMsalEnabled && <Route path="/auth-callback" element={<AuthCallback />} />}
             <Route
               path="/admin/*"
               element={
-                <ProtectedRoute>
+                <ConditionalProtectedRoute>
                   <Admin
-                    dataProvider={dataProvider(myMSALObj)}
+                    dataProvider={dataProvider(myMSALObj || undefined)}
                     authProvider={msalProvider}
-                    loginPage={LoginPage}
+                    loginPage={isMsalEnabled ? LoginPage : undefined}
                     dashboard={Dashboard}
                     basename="/admin"
                     lightTheme={themes["light"]}
@@ -80,12 +99,12 @@ export const App = () => {
                       create={DomainCreate}
                     />
                   </Admin>
-                </ProtectedRoute>
+                </ConditionalProtectedRoute>
               }
             />
           </Routes>
         </BrowserRouter>
-      </MsalInitializer>
+      </AuthWrapper>
     </ThemeProvider>
   );
 };

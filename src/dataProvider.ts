@@ -8,13 +8,11 @@ import { IPublicClientApplication } from "@azure/msal-browser";
 export const dataProvider = (
   msalInstance?: IPublicClientApplication,
 ): DataProvider => {
-  // Create all providers
-  const providers: Record<string, Partial<DataProvider>> = msalInstance
-    ? {
-        domains: createDomainsProvider(msalInstance),
-        // Add other providers here as needed
-      }
-    : {};
+  // Create all providers - always create domains provider, with or without MSAL
+  const providers: Record<string, Partial<DataProvider>> = {
+    domains: createDomainsProvider(msalInstance),
+    // Add other providers here as needed
+  };
 
   // Create a combined provider that routes requests to the appropriate provider
   return {
