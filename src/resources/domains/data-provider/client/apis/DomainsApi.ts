@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * Dehydrated API
- * This API provides a REST interface to manage domains for https://github.com/dehydrated-io/dehydrated
+ * Authentication is optional and depends on server configuration. When enabled, all API endpoints require a valid JWT token in the Authorization header. When disabled, no authentication is required.
  *
  * The version of the OpenAPI document: 1.0
  * 
@@ -33,15 +33,18 @@ import {
 
 export interface ApiV1DomainsDomainDeleteRequest {
     domain: string;
+    alias?: string;
 }
 
 export interface ApiV1DomainsDomainGetRequest {
     domain: string;
+    alias?: string;
 }
 
 export interface ApiV1DomainsDomainPutRequest {
     domain: string;
     request: ModelUpdateDomainRequest;
+    alias?: string;
 }
 
 export interface ApiV1DomainsPostRequest {
@@ -66,6 +69,10 @@ export class DomainsApi extends runtime.BaseAPI {
         }
 
         const queryParameters: any = {};
+
+        if (requestParameters['alias'] != null) {
+            queryParameters['alias'] = requestParameters['alias'];
+        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 
@@ -104,6 +111,10 @@ export class DomainsApi extends runtime.BaseAPI {
         }
 
         const queryParameters: any = {};
+
+        if (requestParameters['alias'] != null) {
+            queryParameters['alias'] = requestParameters['alias'];
+        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 
@@ -150,6 +161,10 @@ export class DomainsApi extends runtime.BaseAPI {
         }
 
         const queryParameters: any = {};
+
+        if (requestParameters['alias'] != null) {
+            queryParameters['alias'] = requestParameters['alias'];
+        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 

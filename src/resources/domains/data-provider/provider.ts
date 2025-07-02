@@ -23,6 +23,7 @@ import { IPublicClientApplication } from "@azure/msal-browser";
 // Create a function to get the API client with the given token
 const getApiClient = (token: string | null) => {
   const config = new Configuration({
+    basePath: import.meta.env.VITE_API_BASE_URL,
     headers: token
       ? {
           Authorization: `Bearer ${token}`,
@@ -90,7 +91,7 @@ export const create = (
       const data = response.data.map(transformElement);
 
       // Sort data
-      data.sort((a, b) => {
+      data.sort((a: Domain, b: Domain) => {
         if (order === "ASC") {
           return (a[field as keyof Domain] ?? "") >
             (b[field as keyof Domain] ?? "")
@@ -119,19 +120,53 @@ export const create = (
     ) => {
       const token = await getToken();
       const api = getApiClient(token);
+
+      // Parse the ID to extract domain and alias
+      // The ID format could be:
+      // 1. domain#alias (encoded as domain%23alias)
+      // 2. domain?alias=alias (new format)
+      let domainIdentifier: string;
+      let aliasParam: string | undefined;
+
+      const decodedId = decodeURIComponent(params.id as string);
+
+      // Check if it's the new format (domain?alias=alias)
+      if (decodedId.includes("?")) {
+        const [domain, queryString] = decodedId.split("?");
+        domainIdentifier = domain;
+
+        // Parse query parameters
+        const urlParams = new URLSearchParams(queryString);
+        aliasParam = urlParams.get("alias") || undefined;
+      } else {
+        // Old format: domain#alias
+        if (decodedId.includes("#")) {
+          const [domain, alias] = decodedId.split("#");
+          domainIdentifier = domain;
+          aliasParam = alias || undefined;
+        } else {
+          // Just domain
+          domainIdentifier = decodedId;
+          aliasParam = undefined;
+        }
+      }
+
+      // Use the new API client with alias support
       const response = await api.apiV1DomainsDomainGet({
-        domain: params.id as string,
+        domain: domainIdentifier,
+        alias: aliasParam,
       });
 
       if (!response.success || !response.data) {
         throw new Error(
-          response.error || `Record not found: domains/${params.id}`,
+          response.error ||
+            `Record not found: domains/${domainIdentifier}${aliasParam ? `?alias=${aliasParam}` : ""}`,
         );
       }
 
       // Transform API response to Domain record
       const transformedRecord = transformElement(response.data);
-
+      transformedRecord.id = decodedId;
       return { data: transformedRecord as unknown as RecordType };
     },
 
@@ -165,19 +200,56 @@ export const create = (
     ) => {
       const token = await getToken();
       const api = getApiClient(token);
+
+      // Parse the ID to extract domain and alias
+      // The ID format could be:
+      // 1. domain#alias (encoded as domain%23alias)
+      // 2. domain?alias=alias (new format)
+      let domainIdentifier: string;
+      let aliasParam: string | undefined;
+
+      const decodedId = decodeURIComponent(params.id as string);
+
+      // Check if it's the new format (domain?alias=alias)
+      if (decodedId.includes("?")) {
+        const [domain, queryString] = decodedId.split("?");
+        domainIdentifier = domain;
+
+        // Parse query parameters
+        const urlParams = new URLSearchParams(queryString);
+        aliasParam = urlParams.get("alias") || undefined;
+      } else {
+        // Old format: domain#alias
+        if (decodedId.includes("#")) {
+          const [domain, alias] = decodedId.split("#");
+          domainIdentifier = domain;
+          aliasParam = alias || undefined;
+        } else {
+          // Just domain
+          domainIdentifier = decodedId;
+          aliasParam = undefined;
+        }
+      }
+
+      // Prepare the request body
+      const requestBody = {
+        enabled: params.data.enabled,
+        comment: params.data.comment,
+        alternativeNames: params.data.alternativeNames,
+        // Note: domain and alias are not included in update request as they are readonly
+      };
+
+      // Use the new API client with alias support
       const response = await api.apiV1DomainsDomainPut({
-        domain: params.id as string,
-        request: {
-          enabled: params.data.enabled,
-          comment: params.data.comment,
-          alternativeNames: params.data.alternativeNames,
-          alias: params.data.alias,
-        },
+        domain: domainIdentifier,
+        alias: aliasParam,
+        request: requestBody,
       });
 
       if (!response.success || !response.data) {
         throw new Error(
-          response.error || `Failed to update domain: ${params.id}`,
+          response.error ||
+            `Failed to update domain: ${domainIdentifier}${aliasParam ? `?alias=${aliasParam}` : ""}`,
         );
       }
 
@@ -193,7 +265,43 @@ export const create = (
       try {
         const token = await getToken();
         const api = getApiClient(token);
-        await api.apiV1DomainsDomainDelete({ domain: params.id as string });
+
+        // Parse the ID to extract domain and alias
+        // The ID format could be:
+        // 1. domain#alias (encoded as domain%23alias)
+        // 2. domain?alias=alias (new format)
+        let domainIdentifier: string;
+        let aliasParam: string | undefined;
+
+        const decodedId = decodeURIComponent(params.id as string);
+
+        // Check if it's the new format (domain?alias=alias)
+        if (decodedId.includes("?")) {
+          const [domain, queryString] = decodedId.split("?");
+          domainIdentifier = domain;
+
+          // Parse query parameters
+          const urlParams = new URLSearchParams(queryString);
+          aliasParam = urlParams.get("alias") || undefined;
+        } else {
+          // Old format: domain#alias
+          if (decodedId.includes("#")) {
+            const [domain, alias] = decodedId.split("#");
+            domainIdentifier = domain;
+            aliasParam = alias || undefined;
+          } else {
+            // Just domain
+            domainIdentifier = decodedId;
+            aliasParam = undefined;
+          }
+        }
+
+        // Use the new API client with alias support
+        await api.apiV1DomainsDomainDelete({
+          domain: domainIdentifier,
+          alias: aliasParam,
+        });
+
         // Return the deleted record ID as required by React-Admin
         return { data: { id: params.id } as unknown as RecordType };
       } catch (error) {
@@ -208,10 +316,54 @@ export const create = (
       const token = await getToken();
       const api = getApiClient(token);
 
+      // First, get all domains to map IDs to domains
+      const allDomainsResponse = await api.apiV1DomainsGet();
+      if (!allDomainsResponse.success || !allDomainsResponse.data) {
+        throw new Error("Failed to fetch domains");
+      }
+
+      // Create a mapping from ID to domain and alias
+      const idToRecordMap = new Map<
+        string,
+        { domain: string; alias?: string }
+      >();
+      allDomainsResponse.data.forEach((entry: any) => {
+        const transformed = transformElement(entry);
+        idToRecordMap.set(transformed.id, {
+          domain: entry.domain || "",
+          alias: entry.alias || undefined,
+        });
+        // Also map the original domain and alias for backward compatibility
+        if (entry.domain) {
+          idToRecordMap.set(entry.domain, {
+            domain: entry.domain,
+            alias: entry.alias || undefined,
+          });
+        }
+        if (entry.alias) {
+          idToRecordMap.set(entry.alias, {
+            domain: entry.domain || "",
+            alias: entry.alias,
+          });
+        }
+      });
+
       // Process each ID sequentially
       for (const id of params.ids) {
         try {
-          await api.apiV1DomainsDomainDelete({ domain: id as string });
+          // Decode the ID to handle URL encoding (e.g., %23 -> #)
+          const decodedId = decodeURIComponent(id as string);
+
+          const recordInfo = idToRecordMap.get(decodedId);
+          if (!recordInfo || !recordInfo.domain) {
+            console.warn(`Could not find domain for ID: ${decodedId}`);
+            continue;
+          }
+
+          await api.apiV1DomainsDomainDelete({
+            domain: recordInfo.domain,
+            alias: recordInfo.alias,
+          });
           deletedIds.push(id);
         } catch (error) {
           // Skip if the record doesn't exist
@@ -232,12 +384,59 @@ export const create = (
 
       const updated: RecordType[] = [];
 
+      // First, get all domains to map IDs to domains
+      const allDomainsResponse = await api.apiV1DomainsGet();
+      if (!allDomainsResponse.success || !allDomainsResponse.data) {
+        throw new Error("Failed to fetch domains");
+      }
+
+      // Create a mapping from ID to domain and alias
+      const idToRecordMap = new Map<
+        string,
+        { domain: string; alias?: string }
+      >();
+      allDomainsResponse.data.forEach((entry: any) => {
+        const transformed = transformElement(entry);
+        idToRecordMap.set(transformed.id, {
+          domain: entry.domain || "",
+          alias: entry.alias || undefined,
+        });
+        // Also map the original domain and alias for backward compatibility
+        if (entry.domain) {
+          idToRecordMap.set(entry.domain, {
+            domain: entry.domain,
+            alias: entry.alias || undefined,
+          });
+        }
+        if (entry.alias) {
+          idToRecordMap.set(entry.alias, {
+            domain: entry.domain || "",
+            alias: entry.alias,
+          });
+        }
+      });
+
       // Process each ID sequentially
       for (const id of params.ids) {
         try {
+          // Decode the ID to handle URL encoding (e.g., %23 -> #)
+          const decodedId = decodeURIComponent(id as string);
+
+          const recordInfo = idToRecordMap.get(decodedId);
+          if (!recordInfo || !recordInfo.domain) {
+            console.warn(`Could not find domain for ID: ${decodedId}`);
+            continue;
+          }
+
           const update = await api.apiV1DomainsDomainPut({
-            domain: id as string,
-            request: params.data as unknown as ModelUpdateDomainRequest,
+            domain: recordInfo.domain,
+            alias: recordInfo.alias,
+            request: {
+              enabled: params.data.enabled,
+              comment: params.data.comment,
+              alternativeNames: params.data.alternativeNames,
+              // Note: domain and alias are not included in update request as they are readonly
+            } as unknown as ModelUpdateDomainRequest,
           });
 
           if (update.success && update.data) {
