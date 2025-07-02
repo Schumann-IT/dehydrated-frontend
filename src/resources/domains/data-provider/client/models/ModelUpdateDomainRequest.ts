@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * Dehydrated API
- * This API provides a REST interface to manage domains for https://github.com/dehydrated-io/dehydrated
+ * Authentication is optional and depends on server configuration. When enabled, all API endpoints require a valid JWT token in the Authorization header. When disabled, no authentication is required.
  *
  * The version of the OpenAPI document: 1.0
  * 
@@ -14,31 +14,35 @@
 
 import { mapValues } from '../runtime';
 /**
- * 
+ * Request to update an existing domain entry
  * @export
  * @interface ModelUpdateDomainRequest
  */
 export interface ModelUpdateDomainRequest {
     /**
      * Alias is an optional alternative identifier.
+     * @Description Optional alternative identifier for the domain
      * @type {string}
      * @memberof ModelUpdateDomainRequest
      */
     alias?: string;
     /**
      * AlternativeNames is a list of additional domain names.
+     * @Description List of additional domain names (e.g., "www.example.com")
      * @type {Array<string>}
      * @memberof ModelUpdateDomainRequest
      */
     alternativeNames?: Array<string>;
     /**
      * Comment is an optional description.
+     * @Description Optional description or comment for the domain
      * @type {string}
      * @memberof ModelUpdateDomainRequest
      */
     comment?: string;
     /**
      * Enabled indicates whether the domain should be active.
+     * @Description Whether the domain is enabled for certificate issuance
      * @type {boolean}
      * @memberof ModelUpdateDomainRequest
      */

@@ -1,4 +1,4 @@
-import { ModelDomainEntry } from "./client";
+import { ModelDomainEntry } from "./client/src";
 
 export interface Domain extends ModelDomainEntry {
   id: string; // using domains as id

@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * Dehydrated API
- * This API provides a REST interface to manage domains for https://github.com/dehydrated-io/dehydrated
+ * Authentication is optional and depends on server configuration. When enabled, all API endpoints require a valid JWT token in the Authorization header. When disabled, no authentication is required.
  *
  * The version of the OpenAPI document: 1.0
  * 
@@ -22,25 +22,28 @@ import {
 } from './ModelDomainEntry';
 
 /**
- * 
+ * Response containing multiple domain entries
  * @export
  * @interface ModelDomainsResponse
  */
 export interface ModelDomainsResponse {
     /**
      * Data contains the list of domain entries if the operation was successful.
+     * @Description List of domain entries if the operation was successful
      * @type {Array<ModelDomainEntry>}
      * @memberof ModelDomainsResponse
      */
     data?: Array<ModelDomainEntry>;
     /**
      * Error contains an error message if the operation failed.
+     * @Description Error message if the operation failed
      * @type {string}
      * @memberof ModelDomainsResponse
      */
     error?: string;
     /**
      * Success indicates whether the operation was successful.
+     * @Description Whether the operation was successful
      * @type {boolean}
      * @memberof ModelDomainsResponse
      */
