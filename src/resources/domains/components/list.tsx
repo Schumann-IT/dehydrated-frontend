@@ -12,6 +12,7 @@ import {
   BulkUpdateButton,
   useListContext,
   FunctionField,
+  SearchInput,
 } from "react-admin";
 import { Fragment } from "react";
 
@@ -75,7 +76,12 @@ const GroupedDatagrid = () => {
 };
 
 export const DomainList = () => (
-  <List actions={<ListActions />}>
+  <List 
+    actions={<ListActions />}
+    filters={[
+      <SearchInput source="q" placeholder="Search domains, aliases, or comments..." alwaysOn />
+    ]}
+  >
     <GroupedDatagrid />
   </List>
 );

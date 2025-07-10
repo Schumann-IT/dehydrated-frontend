@@ -75,6 +75,7 @@ export const create = (
     ) => {
       const { page = 1, perPage = 10 } = params.pagination || {};
       const { field = "id", order = "ASC" } = params.sort || {};
+      const { q: searchTerm } = params.filter || {};
 
       // Get the current token
       const token = await getToken();
@@ -88,7 +89,19 @@ export const create = (
       }
 
       // Transform API response to Domain records
-      const data = response.data.map(transformElement);
+      let data = response.data.map(transformElement);
+
+      // Apply search filter if search term is provided
+      if (searchTerm) {
+        const searchLower = searchTerm.toLowerCase();
+        data = data.filter((record: any) => {
+          return (
+            (record.domain && record.domain.toLowerCase().includes(searchLower)) ||
+            (record.alias && record.alias.toLowerCase().includes(searchLower)) ||
+            (record.comment && record.comment.toLowerCase().includes(searchLower))
+          );
+        });
+      }
 
       // Sort data
       data.sort((a: Domain, b: Domain) => {
@@ -104,7 +117,7 @@ export const create = (
           : -1;
       });
 
-      // Paginate data
+      // Apply pagination to all results (both search and non-search)
       const start = (page - 1) * perPage;
       const end = start + perPage;
 
