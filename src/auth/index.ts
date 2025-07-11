@@ -8,7 +8,9 @@ export * from "./components";
 const isMsalEnabled = import.meta.env.VITE_ENABLE_MSAL === "true";
 const isDevelopment = import.meta.env.DEV;
 
-export const myMSALObj = isMsalEnabled ? new PublicClientApplication(msalConfig) : null;
+export const myMSALObj = isMsalEnabled
+  ? new PublicClientApplication(msalConfig)
+  : null;
 
 // Initialize MSAL only if enabled
 export const initializeMsal = async () => {
@@ -18,11 +20,12 @@ export const initializeMsal = async () => {
 };
 
 // Create MSAL provider only if enabled
-const baseProvider = isMsalEnabled && myMSALObj 
-  ? msalAuthProvider({
-      msalInstance: myMSALObj,
-    })
-  : null;
+const baseProvider =
+  isMsalEnabled && myMSALObj
+    ? msalAuthProvider({
+        msalInstance: myMSALObj,
+      })
+    : null;
 
 // No-auth provider for development
 const noAuthProvider = {
@@ -31,21 +34,23 @@ const noAuthProvider = {
   checkError: async () => Promise.resolve(),
   checkAuth: async () => Promise.resolve(),
   getPermissions: async () => Promise.resolve(),
-  getIdentity: async () => Promise.resolve({
-    id: "dev-user",
-    fullName: "Development User",
-  }),
+  getIdentity: async () =>
+    Promise.resolve({
+      id: "dev-user",
+      fullName: "Development User",
+    }),
 };
 
-export const provider = isMsalEnabled && baseProvider 
-  ? {
-      ...baseProvider,
-      logout: async (params = {}) => {
-        // First clear the local auth state
-        await baseProvider.logout(params);
-        // Then redirect to the landing page
-        window.location.href = "/";
-        return Promise.resolve();
-      },
-    }
-  : noAuthProvider;
+export const provider =
+  isMsalEnabled && baseProvider
+    ? {
+        ...baseProvider,
+        logout: async (params = {}) => {
+          // First clear the local auth state
+          await baseProvider.logout(params);
+          // Then redirect to the landing page
+          window.location.href = "/";
+          return Promise.resolve();
+        },
+      }
+    : noAuthProvider;

@@ -96,9 +96,12 @@ export const create = (
         const searchLower = searchTerm.toLowerCase();
         data = data.filter((record: any) => {
           return (
-            (record.domain && record.domain.toLowerCase().includes(searchLower)) ||
-            (record.alias && record.alias.toLowerCase().includes(searchLower)) ||
-            (record.comment && record.comment.toLowerCase().includes(searchLower))
+            (record.domain &&
+              record.domain.toLowerCase().includes(searchLower)) ||
+            (record.alias &&
+              record.alias.toLowerCase().includes(searchLower)) ||
+            (record.comment &&
+              record.comment.toLowerCase().includes(searchLower))
           );
         });
       }

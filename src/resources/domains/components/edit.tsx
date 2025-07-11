@@ -12,8 +12,18 @@ export const DomainEdit = () => {
   return (
     <Edit redirect="list" title="Edit Domain">
       <SimpleForm>
-        <TextInput source="domain" validate={required()} label="Domain" disabled />
-        <TextInput source="alias" label="Alias (Read-only)" disabled helperText="Alias cannot be changed after creation" />
+        <TextInput
+          source="domain"
+          validate={required()}
+          label="Domain"
+          disabled
+        />
+        <TextInput
+          source="alias"
+          label="Alias (Read-only)"
+          disabled
+          helperText="Alias cannot be changed after creation"
+        />
         <BooleanInput source="enabled" label="Enabled" />
         <ArrayInput source="alternativeNames" label="Alternative Names">
           <SimpleFormIterator>
