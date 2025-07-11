@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dehydrated-frontend-ingress
+  labels:
+    app: dehydrated-frontend
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - dehydrated-frontend.your-domain.com
+    secretName: dehydrated-frontend-tls
+  rules:
+  - host: dehydrated-frontend.your-domain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: dehydrated-frontend-service
+            port:
+              number: 80 
