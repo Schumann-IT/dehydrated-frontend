@@ -16,6 +16,7 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "@schumann-it/theme": path.resolve(__dirname, "../dehydrated-frontend-theme"),
       ...getAliasesToDebugInProduction(),
     },
   },
