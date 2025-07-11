@@ -63,7 +63,11 @@ export const App = () => {
   };
 
   // Conditional protected route component
-  const ConditionalProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const ConditionalProtectedRoute = ({
+    children,
+  }: {
+    children: React.ReactNode;
+  }) => {
     if (isMsalEnabled) {
       return <ProtectedRoute>{children}</ProtectedRoute>;
     }
@@ -77,7 +81,9 @@ export const App = () => {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home />} />
-            {isMsalEnabled && <Route path="/auth-callback" element={<AuthCallback />} />}
+            {isMsalEnabled && (
+              <Route path="/auth-callback" element={<AuthCallback />} />
+            )}
             <Route
               path="/admin/*"
               element={
