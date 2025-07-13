@@ -74,58 +74,38 @@ export const create = (
       params: GetListParams,
     ) => {
       const { page = 1, perPage = 10 } = params.pagination || {};
-      const { field = "id", order = "ASC" } = params.sort || {};
+      const { field = "domain", order = "ASC" } = params.sort || {};
       const { q: searchTerm } = params.filter || {};
 
       // Get the current token
       const token = await getToken();
 
-      // Get domains from the API using the client with current token and pagination
-      const api = getApiClient(token);
-      const response = await api.apiV1DomainsGet({
+      // Prepare API parameters
+      const apiParams: any = {
         page,
         perPage,
-      });
+      };
+
+      // Only apply search if it's provided and we're sorting by domain
+      if (searchTerm && field === "domain") {
+        apiParams.search = searchTerm;
+      }
+
+      // Only apply sort if we're sorting by domain field
+      if (field === "domain") {
+        apiParams.sort = order === "ASC" ? "asc" : "desc";
+      }
+
+      // Get domains from the API using the client with current token and pagination
+      const api = getApiClient(token);
+      const response = await api.apiV1DomainsGet(apiParams);
 
       if (!response.success || !response.data) {
         throw new Error(response.error || "Failed to fetch domains");
       }
 
       // Transform API response to Domain records
-      let data = response.data.map(transformElement);
-
-      // Apply search filter if search term is provided
-      // Note: Since we're using server-side pagination, search filtering
-      // should ideally be handled by the server. For now, we'll apply it client-side
-      // on the current page data, but this is not ideal for large datasets.
-      if (searchTerm) {
-        const searchLower = searchTerm.toLowerCase();
-        data = data.filter((record: any) => {
-          return (
-            (record.domain &&
-              record.domain.toLowerCase().includes(searchLower)) ||
-            (record.alias &&
-              record.alias.toLowerCase().includes(searchLower)) ||
-            (record.comment &&
-              record.comment.toLowerCase().includes(searchLower))
-          );
-        });
-      }
-
-      // Sort data client-side for the current page
-      // Note: For better performance, sorting should also be handled server-side
-      data.sort((a: Domain, b: Domain) => {
-        if (order === "ASC") {
-          return (a[field as keyof Domain] ?? "") >
-            (b[field as keyof Domain] ?? "")
-            ? 1
-            : -1;
-        }
-        return (a[field as keyof Domain] ?? "") <
-          (b[field as keyof Domain] ?? "")
-          ? 1
-          : -1;
-      });
+      const data = response.data.map(transformElement);
 
       return {
         data: data as unknown as RecordType[],

@@ -57,11 +57,12 @@ const GroupedDatagrid = () => {
             rowClick="show"
           >
             <TextField source="domain" label="Domain" />
-            <TextField source="alias" label="Alias" />
-            <BooleanField source="enabled" label="Enabled" />
-            <TextField source="comment" label="Comment" />
+            <TextField source="alias" label="Alias" sortable={false} />
+            <BooleanField source="enabled" label="Enabled" sortable={false} />
+            <TextField source="comment" label="Comment" sortable={false} />
             <FunctionField
               label="OpenSSL Status"
+              sortable={false}
               render={(record: any) => {
                 const opensslStatus = getOpenSSLStatus(record.metadata);
                 if (!opensslStatus || opensslStatus.length === 0) {
@@ -98,6 +99,7 @@ const GroupedDatagrid = () => {
             />
             <FunctionField
               label="NetScaler Status"
+              sortable={false}
               render={(record: any) => {
                 const netscalerStatus = getNetScalerStatus(record.metadata);
                 if (!netscalerStatus || netscalerStatus.length === 0) {
@@ -134,6 +136,7 @@ const GroupedDatagrid = () => {
             />
             <FunctionField
               label="Actions"
+              sortable={false}
               render={(record: any) => {
                 const basePath = "/admin/domains";
                 const editUrl = record.alias
@@ -161,7 +164,7 @@ export const DomainList = () => (
     filters={[
       <SearchInput
         source="q"
-        placeholder="Search domains, aliases, or comments..."
+        placeholder="Search domains..."
         alwaysOn
       />,
     ]}
