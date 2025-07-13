@@ -17,8 +17,10 @@ import {
   Configuration,
   ModelUpdateDomainRequest,
   ModelCreateDomainRequest,
+  ModelDomainEntry,
 } from "./client";
 import { IPublicClientApplication } from "@azure/msal-browser";
+import { ApiV1DomainsGetRequest } from "./client/apis/DomainsApi";
 
 // Create a function to get the API client with the given token
 const getApiClient = (token: string | null) => {
@@ -81,7 +83,7 @@ export const create = (
       const token = await getToken();
 
       // Prepare API parameters
-      const apiParams: any = {
+      const apiParams: ApiV1DomainsGetRequest = {
         page,
         perPage,
       };
@@ -330,7 +332,7 @@ export const create = (
         string,
         { domain: string; alias?: string }
       >();
-      allDomainsResponse.data.forEach((entry: any) => {
+      allDomainsResponse.data.forEach((entry: ModelDomainEntry) => {
         const transformed = transformElement(entry);
         idToRecordMap.set(transformed.id, {
           domain: entry.domain || "",
@@ -400,7 +402,7 @@ export const create = (
         string,
         { domain: string; alias?: string }
       >();
-      allDomainsResponse.data.forEach((entry: any) => {
+      allDomainsResponse.data.forEach((entry: ModelDomainEntry) => {
         const transformed = transformElement(entry);
         idToRecordMap.set(transformed.id, {
           domain: entry.domain || "",

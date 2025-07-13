@@ -82,11 +82,55 @@ export const formatDate = (dateString: string) => {
   }
 };
 
-// Helper function to get OpenSSL certificate status
-export const getOpenSSLStatus = (metadata: any) => {
-  if (!metadata?.openssl) return null;
+// Define types for metadata objects
+interface OpenSSLMetadata {
+  cert?: {
+    error?: string;
+    not_before?: string;
+    not_after?: string;
+  };
+  chain?: {
+    error?: string;
+    not_before?: string;
+    not_after?: string;
+  };
+  fullchain?: {
+    error?: string;
+    not_before?: string;
+    not_after?: string;
+  };
+}
 
-  const openssl = metadata.openssl;
+interface NetScalerMetadata {
+  error?: string;
+  dev?: {
+    error?: string;
+    clientcertnotbefore?: string;
+    clientcertnotafter?: string;
+  };
+  prod?: {
+    error?: string;
+    clientcertnotbefore?: string;
+    clientcertnotafter?: string;
+  };
+}
+
+interface MetadataWithOpenSSL {
+  openssl?: OpenSSLMetadata;
+}
+
+interface MetadataWithNetScaler {
+  netscaler?: NetScalerMetadata;
+}
+
+// Helper function to get OpenSSL certificate status
+export const getOpenSSLStatus = (metadata: object | undefined) => {
+  if (!metadata || typeof metadata !== "object" || !("openssl" in metadata))
+    return null;
+
+  const openssl = (metadata as MetadataWithOpenSSL).openssl;
+  if (!openssl) return null;
+
   const statuses = [];
 
   // Check certificate
@@ -144,10 +188,13 @@ export const getOpenSSLStatus = (metadata: any) => {
 };
 
 // Helper function to get NetScaler certificate status
-export const getNetScalerStatus = (metadata: any) => {
-  if (!metadata?.netscaler) return null;
+export const getNetScalerStatus = (metadata: object | undefined) => {
+  if (!metadata || typeof metadata !== "object" || !("netscaler" in metadata))
+    return null;
 
-  const netscaler = metadata.netscaler;
+  const netscaler = (metadata as MetadataWithNetScaler).netscaler;
+  if (!netscaler) return null;
+
   const statuses = [];
 
   // Check if netscaler has a top-level error
