@@ -22,7 +22,9 @@ export const initializeMsal = async () => {
 const baseProvider =
   isMsalEnabled && myMSALObj
     ? msalAuthProvider({
-        msalInstance: myMSALObj,
+        msalInstance: myMSALObj as unknown as Parameters<
+          typeof msalAuthProvider
+        >[0]["msalInstance"],
       })
     : null;
 
