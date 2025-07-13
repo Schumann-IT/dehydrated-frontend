@@ -13,6 +13,20 @@ export interface CustomThemeOptions {
   assets?: {
     wallpaper: string;
   };
+  home?: {
+    box?: {
+      display?: string;
+      flexDirection?: string;
+      alignItems?: string;
+      textAlign?: string;
+      gap?: number;
+      backgroundColor?: string;
+      backdropFilter?: string;
+      padding?: number;
+      borderRadius?: number;
+      [key: string]: any;
+    };
+  };
   texts?: {
     title: string;
     dashboard: {
@@ -24,6 +38,19 @@ export interface CustomThemeOptions {
 export const defaultThemeOptions: CustomThemeOptions = {
   assets: {
     wallpaper: "",
+  },
+  home: {
+    box: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      textAlign: "center",
+      gap: 4,
+      backgroundColor: "rgba(255, 255, 255, 0.9)",
+      backdropFilter: "blur(8px)",
+      padding: 4,
+      borderRadius: 2,
+    },
   },
   texts: {
     title: "Dehydrated API frontend",

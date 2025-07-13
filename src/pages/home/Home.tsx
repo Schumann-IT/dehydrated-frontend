@@ -38,15 +38,7 @@ export const Home = () => {
       <Container maxWidth="sm" sx={{ width: "auto" }}>
         <Box
           sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            textAlign: "center",
-            gap: 4,
-            backgroundColor: "rgba(255, 255, 255, 0.9)",
-            backdropFilter: "blur(8px)",
-            padding: 4,
-            borderRadius: 2,
+            ...theme.home?.box,
           }}
         >
           <Typography variant="h2" component="h1" gutterBottom>
