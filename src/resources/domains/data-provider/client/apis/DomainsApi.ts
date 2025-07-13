@@ -52,6 +52,8 @@ export interface ApiV1DomainsDomainPutRequest {
 export interface ApiV1DomainsGetRequest {
     page?: number;
     perPage?: number;
+    sort?: ApiV1DomainsGetSortEnum;
+    search?: string;
 }
 
 export interface ApiV1DomainsPostRequest {
@@ -204,7 +206,7 @@ export class DomainsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get a paginated list of all configured domains
+     * Get a paginated list of all configured domains with optional sorting and searching
      * List all domains
      */
     async apiV1DomainsGetRaw(requestParameters: ApiV1DomainsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ModelPaginatedDomainsResponse>> {
@@ -216,6 +218,14 @@ export class DomainsApi extends runtime.BaseAPI {
 
         if (requestParameters['perPage'] != null) {
             queryParameters['per_page'] = requestParameters['perPage'];
+        }
+
+        if (requestParameters['sort'] != null) {
+            queryParameters['sort'] = requestParameters['sort'];
+        }
+
+        if (requestParameters['search'] != null) {
+            queryParameters['search'] = requestParameters['search'];
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -235,7 +245,7 @@ export class DomainsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get a paginated list of all configured domains
+     * Get a paginated list of all configured domains with optional sorting and searching
      * List all domains
      */
     async apiV1DomainsGet(requestParameters: ApiV1DomainsGetRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ModelPaginatedDomainsResponse> {
@@ -286,3 +296,12 @@ export class DomainsApi extends runtime.BaseAPI {
     }
 
 }
+
+/**
+ * @export
+ */
+export const ApiV1DomainsGetSortEnum = {
+    Asc: 'asc',
+    Desc: 'desc'
+} as const;
+export type ApiV1DomainsGetSortEnum = typeof ApiV1DomainsGetSortEnum[keyof typeof ApiV1DomainsGetSortEnum];
