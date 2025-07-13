@@ -80,9 +80,12 @@ export const create = (
       // Get the current token
       const token = await getToken();
 
-      // Get domains from the API using the client with current token
+      // Get domains from the API using the client with current token and pagination
       const api = getApiClient(token);
-      const response = await api.apiV1DomainsGet();
+      const response = await api.apiV1DomainsGet({
+        page,
+        perPage,
+      });
 
       if (!response.success || !response.data) {
         throw new Error(response.error || "Failed to fetch domains");
@@ -92,6 +95,9 @@ export const create = (
       let data = response.data.map(transformElement);
 
       // Apply search filter if search term is provided
+      // Note: Since we're using server-side pagination, search filtering
+      // should ideally be handled by the server. For now, we'll apply it client-side
+      // on the current page data, but this is not ideal for large datasets.
       if (searchTerm) {
         const searchLower = searchTerm.toLowerCase();
         data = data.filter((record: any) => {
@@ -106,7 +112,8 @@ export const create = (
         });
       }
 
-      // Sort data
+      // Sort data client-side for the current page
+      // Note: For better performance, sorting should also be handled server-side
       data.sort((a: Domain, b: Domain) => {
         if (order === "ASC") {
           return (a[field as keyof Domain] ?? "") >
@@ -120,13 +127,9 @@ export const create = (
           : -1;
       });
 
-      // Apply pagination to all results (both search and non-search)
-      const start = (page - 1) * perPage;
-      const end = start + perPage;
-
       return {
-        data: data.slice(start, end) as unknown as RecordType[],
-        total: data.length,
+        data: data as unknown as RecordType[],
+        total: response.pagination?.total || data.length,
       };
     },
 
@@ -258,8 +261,10 @@ export const create = (
       // Use the new API client with alias support
       const response = await api.apiV1DomainsDomainPut({
         domain: domainIdentifier,
-        alias: aliasParam,
-        request: requestBody,
+        request: {
+          ...requestBody,
+          alias: aliasParam,
+        },
       });
 
       if (!response.success || !response.data) {
@@ -315,7 +320,9 @@ export const create = (
         // Use the new API client with alias support
         await api.apiV1DomainsDomainDelete({
           domain: domainIdentifier,
-          alias: aliasParam,
+          request: {
+            alias: aliasParam,
+          },
         });
 
         // Return the deleted record ID as required by React-Admin
@@ -378,7 +385,9 @@ export const create = (
 
           await api.apiV1DomainsDomainDelete({
             domain: recordInfo.domain,
-            alias: recordInfo.alias,
+            request: {
+              alias: recordInfo.alias,
+            },
           });
           deletedIds.push(id);
         } catch (error) {
@@ -446,11 +455,11 @@ export const create = (
 
           const update = await api.apiV1DomainsDomainPut({
             domain: recordInfo.domain,
-            alias: recordInfo.alias,
             request: {
               enabled: params.data.enabled,
               comment: params.data.comment,
               alternativeNames: params.data.alternativeNames,
+              alias: recordInfo.alias,
               // Note: domain and alias are not included in update request as they are readonly
             } as unknown as ModelUpdateDomainRequest,
           });
