@@ -18,7 +18,6 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  Divider,
 } from "@mui/material";
 import { ExpandMore, Security, Storage } from "@mui/icons-material";
 import {
@@ -27,12 +26,57 @@ import {
   checkCertificateValidity,
 } from "../utils/certificateUtils";
 
+// Define types for certificate data
+interface NetScalerCertificateData {
+  error?: string;
+  cert?: string;
+  key?: string;
+  linkcertkeyname?: string;
+  serial?: string;
+  version?: string;
+  clientcertnotbefore?: string;
+  clientcertnotafter?: string;
+  daystoexpiration?: number;
+  status?: string;
+  certificatetype?: string[];
+  subject?: string;
+  issuer?: string;
+  publickey?: string;
+  publickeysize?: number;
+  signaturealg?: string;
+  sandns?: string;
+  expirymonitor?: string;
+  notificationperiod?: number;
+  feature?: string;
+  inform?: string;
+}
+
+interface OpenSSLCertificateSection {
+  error?: string;
+  file?: string;
+  subject?: string;
+  issuer?: string;
+  not_before?: string;
+  not_after?: string;
+  type?: string;
+  size?: number;
+  [key: string]: string | number | undefined;
+}
+
+interface OpenSSLCertificateData {
+  error?: string;
+  cert?: OpenSSLCertificateSection;
+  chain?: OpenSSLCertificateSection;
+  fullchain?: OpenSSLCertificateSection;
+  key?: OpenSSLCertificateSection;
+}
+
 // Component to display NetScaler certificate info
 const NetScalerCertificateInfo = ({
   data,
   environment,
 }: {
-  data: any;
+  data: NetScalerCertificateData;
   environment: string;
 }) => {
   // Check if this is an error response
@@ -78,17 +122,23 @@ const NetScalerCertificateInfo = ({
               Validity
             </Typography>
             <Typography variant="body2">
-              Not Before: {formatDate(data.clientcertnotbefore)}
+              Not Before: {formatDate(data.clientcertnotbefore || "")}
             </Typography>
             <Typography variant="body2">
-              Not After: {formatDate(data.clientcertnotafter)}
+              Not After: {formatDate(data.clientcertnotafter || "")}
             </Typography>
             <Typography variant="body2">
               Days to Expiration: {data.daystoexpiration}
             </Typography>
             <Chip
               label={data.status}
-              color={getStatusColor(data.status) as any}
+              color={
+                getStatusColor(data.status || "") as
+                  | "success"
+                  | "error"
+                  | "warning"
+                  | "default"
+              }
               size="small"
               sx={{ mt: 1 }}
             />
@@ -145,7 +195,7 @@ const NetScalerCertificateInfo = ({
 };
 
 // Component to display OpenSSL certificate info
-const OpenSSLCertificateInfo = ({ data }: { data: any }) => {
+const OpenSSLCertificateInfo = ({ data }: { data: OpenSSLCertificateData }) => {
   // Check if this is an error response
   if (data.error) {
     return (
@@ -168,7 +218,7 @@ const OpenSSLCertificateInfo = ({ data }: { data: any }) => {
   // Helper function to render certificate section with error handling
   const renderCertificateSection = (
     sectionName: string,
-    sectionData: any,
+    sectionData: OpenSSLCertificateSection | undefined,
     fields: string[],
   ) => {
     if (sectionData?.error) {
@@ -221,7 +271,7 @@ const OpenSSLCertificateInfo = ({ data }: { data: any }) => {
             return (
               <Typography key={field} variant="body2">
                 {field === "not_before" ? "Not Before: " : "Not After: "}
-                {formatDate(sectionData?.[field])}
+                {formatDate(sectionData?.[field] as string)}
               </Typography>
             );
           }

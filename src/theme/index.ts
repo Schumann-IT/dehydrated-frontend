@@ -24,7 +24,7 @@ export interface CustomThemeOptions {
       backdropFilter?: string;
       padding?: number;
       borderRadius?: number;
-      [key: string]: any;
+      [key: string]: string | number | undefined;
     };
   };
   texts?: {

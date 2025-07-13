@@ -23,7 +23,7 @@ export interface CustomThemeOptions extends ThemeOptions {
       border?: string;
       position?: string;
       left?: string;
-      [key: string]: any;
+      [key: string]: string | number | undefined;
     };
   };
   texts: {

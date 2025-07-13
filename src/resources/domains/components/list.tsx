@@ -20,6 +20,7 @@ import {
   getOpenSSLStatus,
   getNetScalerStatus,
 } from "../utils/certificateUtils";
+import { ModelDomainEntry } from "../data-provider/client/models";
 
 const ListActions = () => (
   <TopToolbar>
@@ -33,14 +34,17 @@ const GroupedDatagrid = () => {
 
   // Group data by domain, but use alias for identification when available
   const groupedData =
-    data?.reduce((acc: Record<string, any[]>, record: any) => {
-      const domain = record.domain || "Unknown";
-      if (!acc[domain]) {
-        acc[domain] = [];
-      }
-      acc[domain].push(record);
-      return acc;
-    }, {}) || {};
+    (data as ModelDomainEntry[])?.reduce(
+      (acc: Record<string, ModelDomainEntry[]>, record: ModelDomainEntry) => {
+        const domain = record.domain || "Unknown";
+        if (!acc[domain]) {
+          acc[domain] = [];
+        }
+        acc[domain].push(record);
+        return acc;
+      },
+      {},
+    ) || {};
 
   return (
     <>
@@ -63,7 +67,7 @@ const GroupedDatagrid = () => {
             <FunctionField
               label="OpenSSL Status"
               sortable={false}
-              render={(record: any) => {
+              render={(record: ModelDomainEntry) => {
                 const opensslStatus = getOpenSSLStatus(record.metadata);
                 if (!opensslStatus || opensslStatus.length === 0) {
                   return <span style={{ color: "#999" }}>No data</span>;
@@ -100,7 +104,7 @@ const GroupedDatagrid = () => {
             <FunctionField
               label="NetScaler Status"
               sortable={false}
-              render={(record: any) => {
+              render={(record: ModelDomainEntry) => {
                 const netscalerStatus = getNetScalerStatus(record.metadata);
                 if (!netscalerStatus || netscalerStatus.length === 0) {
                   return <span style={{ color: "#999" }}>No data</span>;
@@ -137,11 +141,12 @@ const GroupedDatagrid = () => {
             <FunctionField
               label="Actions"
               sortable={false}
-              render={(record: any) => {
+              render={(record: ModelDomainEntry) => {
                 const basePath = "/admin/domains";
+                const domain = record.domain || "";
                 const editUrl = record.alias
-                  ? `${basePath}/${encodeURIComponent(record.domain)}?alias=${encodeURIComponent(record.alias)}`
-                  : `${basePath}/${encodeURIComponent(record.domain)}`;
+                  ? `${basePath}/${encodeURIComponent(domain)}?alias=${encodeURIComponent(record.alias)}`
+                  : `${basePath}/${encodeURIComponent(domain)}`;
 
                 return (
                   <div style={{ display: "flex", gap: "8px" }}>
@@ -163,6 +168,7 @@ export const DomainList = () => (
     actions={<ListActions />}
     filters={[
       <SearchInput
+        key="search"
         source="q"
         placeholder="Search domains..."
         alwaysOn

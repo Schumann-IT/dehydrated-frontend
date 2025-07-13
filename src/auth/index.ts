@@ -6,7 +6,6 @@ export * from "./components";
 
 // Check if MSAL is enabled via environment variable
 const isMsalEnabled = import.meta.env.VITE_ENABLE_MSAL === "true";
-const isDevelopment = import.meta.env.DEV;
 
 export const myMSALObj = isMsalEnabled
   ? new PublicClientApplication(msalConfig)
