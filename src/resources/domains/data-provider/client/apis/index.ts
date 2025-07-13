@@ -1,4 +1,5 @@
 /* tslint:disable */
 /* eslint-disable */
-export * from "./DomainsApi";
-export * from "./HealthApi";
+export * from './ConfigApi';
+export * from './DomainsApi';
+export * from './HealthApi';

@@ -1,11 +1,17 @@
+apis/ConfigApi.ts
 apis/DomainsApi.ts
 apis/HealthApi.ts
 apis/index.ts
 index.ts
+models/DehydratedConfig.ts
+models/ModelConfigResponse.ts
 models/ModelCreateDomainRequest.ts
+models/ModelDeleteDomainRequest.ts
 models/ModelDomainEntry.ts
 models/ModelDomainResponse.ts
 models/ModelDomainsResponse.ts
+models/ModelPaginatedDomainsResponse.ts
+models/ModelPaginationInfo.ts
 models/ModelUpdateDomainRequest.ts
 models/index.ts
 runtime.ts
