@@ -15,23 +15,23 @@
 
 import * as runtime from '../runtime';
 import type {
-  ModelDomainsResponse,
+  ModelConfigResponse,
 } from '../models/index';
 import {
-    ModelDomainsResponseFromJSON,
-    ModelDomainsResponseToJSON,
+    ModelConfigResponseFromJSON,
+    ModelConfigResponseToJSON,
 } from '../models/index';
 
 /**
  * 
  */
-export class HealthApi extends runtime.BaseAPI {
+export class ConfigApi extends runtime.BaseAPI {
 
     /**
-     * Check if the API is running and healthy
-     * Health check
+     * Retrieve the current dehydrated configuration settings including paths, certificates, and operational parameters
+     * Get dehydrated configuration
      */
-    async healthGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ModelDomainsResponse>> {
+    async configGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ModelConfigResponse>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -41,21 +41,21 @@ export class HealthApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/health`,
+            path: `/config`,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => ModelDomainsResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => ModelConfigResponseFromJSON(jsonValue));
     }
 
     /**
-     * Check if the API is running and healthy
-     * Health check
+     * Retrieve the current dehydrated configuration settings including paths, certificates, and operational parameters
+     * Get dehydrated configuration
      */
-    async healthGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ModelDomainsResponse> {
-        const response = await this.healthGetRaw(initOverrides);
+    async configGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ModelConfigResponse> {
+        const response = await this.configGetRaw(initOverrides);
         return await response.value();
     }
 
