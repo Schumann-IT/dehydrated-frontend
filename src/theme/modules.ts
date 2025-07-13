@@ -1,7 +1,7 @@
 import { ThemeModules } from "@/theme/types.ts";
 
 export const modules: ThemeModules = {
-  "hansemerkur": {
+  hansemerkur: {
     module: import("@/theme/hansemerkur"),
     light: "light",
     dark: "dark",
