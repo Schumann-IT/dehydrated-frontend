@@ -8,20 +8,60 @@ import {
   myMSALObj,
   provider as msalProvider,
 } from "@/auth";
-import { Dashboard } from "@/pages/dashboard";
-import {
-  DomainList,
-  DomainShow,
-  DomainEdit,
-  DomainCreate,
-  InvalidDomainList,
-} from "@/resources/domains";
-import { Home } from "@/pages/home";
 import { dataProvider } from "@/dataProvider.ts";
 import { Theme, ThemeProvider } from "@mui/material";
 import { CssBaseline } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense, lazy } from "react";
 import { getTheme } from "@/theme";
+
+// Lazy load components
+const Dashboard = lazy(() =>
+  import("@/pages/dashboard").then((module) => ({ default: module.Dashboard })),
+);
+const Home = lazy(() =>
+  import("@/pages/home").then((module) => ({ default: module.Home })),
+);
+const DomainList = lazy(() =>
+  import("@/resources/domains").then((module) => ({
+    default: module.DomainList,
+  })),
+);
+const DomainShow = lazy(() =>
+  import("@/resources/domains").then((module) => ({
+    default: module.DomainShow,
+  })),
+);
+const DomainEdit = lazy(() =>
+  import("@/resources/domains").then((module) => ({
+    default: module.DomainEdit,
+  })),
+);
+const DomainCreate = lazy(() =>
+  import("@/resources/domains").then((module) => ({
+    default: module.DomainCreate,
+  })),
+);
+const InvalidDomainList = lazy(() =>
+  import("@/resources/domains").then((module) => ({
+    default: module.InvalidDomainList,
+  })),
+);
+
+// Loading component
+const LoadingSpinner = () => (
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      height: "100vh",
+      fontSize: "1.2rem",
+      color: "#666",
+    }}
+  >
+    Loading...
+  </div>
+);
 
 // Check if MSAL is enabled
 const isMsalEnabled = import.meta.env.VITE_ENABLE_MSAL === "true";
@@ -51,7 +91,7 @@ export const App = () => {
   }, []);
 
   if (!themes) {
-    return null; // or a loading spinner
+    return <LoadingSpinner />;
   }
 
   // Conditional MSAL wrapper component
@@ -79,41 +119,43 @@ export const App = () => {
       <CssBaseline />
       <AuthWrapper>
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            {isMsalEnabled && (
-              <Route path="/auth-callback" element={<AuthCallback />} />
-            )}
-            <Route
-              path="/admin/*"
-              element={
-                <ConditionalProtectedRoute>
-                  <Admin
-                    dataProvider={dataProvider(myMSALObj || undefined)}
-                    authProvider={msalProvider}
-                    loginPage={isMsalEnabled ? LoginPage : undefined}
-                    dashboard={Dashboard}
-                    basename="/admin"
-                    lightTheme={themes["light"]}
-                    darkTheme={themes["dark"]}
-                  >
-                    <Resource
-                      name="domains"
-                      list={DomainList}
-                      edit={DomainEdit}
-                      show={DomainShow}
-                      create={DomainCreate}
-                    />
-                    <Resource
-                      name="invalid-domains"
-                      options={{ label: "Invalid Domains" }}
-                      list={InvalidDomainList}
-                    />
-                  </Admin>
-                </ConditionalProtectedRoute>
-              }
-            />
-          </Routes>
+          <Suspense fallback={<LoadingSpinner />}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              {isMsalEnabled && (
+                <Route path="/auth-callback" element={<AuthCallback />} />
+              )}
+              <Route
+                path="/admin/*"
+                element={
+                  <ConditionalProtectedRoute>
+                    <Admin
+                      dataProvider={dataProvider(myMSALObj || undefined)}
+                      authProvider={msalProvider}
+                      loginPage={isMsalEnabled ? LoginPage : undefined}
+                      dashboard={Dashboard}
+                      basename="/admin"
+                      lightTheme={themes["light"]}
+                      darkTheme={themes["dark"]}
+                    >
+                      <Resource
+                        name="domains"
+                        list={DomainList}
+                        edit={DomainEdit}
+                        show={DomainShow}
+                        create={DomainCreate}
+                      />
+                      <Resource
+                        name="invalid-domains"
+                        options={{ label: "Invalid Domains" }}
+                        list={InvalidDomainList}
+                      />
+                    </Admin>
+                  </ConditionalProtectedRoute>
+                }
+              />
+            </Routes>
+          </Suspense>
         </BrowserRouter>
       </AuthWrapper>
     </ThemeProvider>

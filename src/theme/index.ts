@@ -3,7 +3,11 @@ import { createTheme, Theme } from "@mui/material";
 import { modules } from "./modules";
 import { ThemeModules } from "@/theme/types.ts";
 
-import { defaultDarkTheme, defaultLightTheme } from "react-admin";
+// Only import default themes when needed
+const getDefaultThemes = async () => {
+  const { defaultDarkTheme, defaultLightTheme } = await import("react-admin");
+  return { defaultDarkTheme, defaultLightTheme };
+};
 
 const themes: ThemeModules = {
   ...modules,
@@ -97,15 +101,20 @@ const baseThemes = {
   }),
 };
 
-const defaultThemes = {
-  light: deepmerge(
-    defaultThemeOptions,
-    deepmerge(baseThemes.light, defaultLightTheme) as Theme,
-  ),
-  dark: deepmerge(
-    defaultThemeOptions,
-    deepmerge(baseThemes.dark, defaultDarkTheme) as Theme,
-  ),
+// Create default themes function that loads react-admin themes dynamically
+const createDefaultThemes = async () => {
+  const { defaultDarkTheme, defaultLightTheme } = await getDefaultThemes();
+
+  return {
+    light: deepmerge(
+      defaultThemeOptions,
+      deepmerge(baseThemes.light, defaultLightTheme) as Theme,
+    ),
+    dark: deepmerge(
+      defaultThemeOptions,
+      deepmerge(baseThemes.dark, defaultDarkTheme) as Theme,
+    ),
+  };
 };
 
 export const getTheme = async (
@@ -114,6 +123,9 @@ export const getTheme = async (
   light: Theme;
   dark: Theme;
 }> => {
+  // Load default themes dynamically
+  const defaultThemes = await createDefaultThemes();
+
   const ret: {
     light: Theme;
     dark: Theme;
