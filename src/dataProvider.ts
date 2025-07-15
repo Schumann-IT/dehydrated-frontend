@@ -11,6 +11,7 @@ export const dataProvider = (
   // Create all providers - always create domains provider, with or without MSAL
   const providers: Record<string, Partial<DataProvider>> = {
     domains: createDomainsProvider(msalInstance),
+    "invalid-domains": createDomainsProvider(msalInstance), // Use same provider for invalid domains
     // Add other providers here as needed
   };
 

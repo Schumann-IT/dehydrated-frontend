@@ -14,6 +14,7 @@ import {
   DomainShow,
   DomainEdit,
   DomainCreate,
+  InvalidDomainList,
 } from "@/resources/domains";
 import { Home } from "@/pages/home";
 import { dataProvider } from "@/dataProvider.ts";
@@ -103,6 +104,11 @@ export const App = () => {
                       edit={DomainEdit}
                       show={DomainShow}
                       create={DomainCreate}
+                    />
+                    <Resource
+                      name="invalid-domains"
+                      options={{ label: "Invalid Domains" }}
+                      list={InvalidDomainList}
                     />
                   </Admin>
                 </ConditionalProtectedRoute>

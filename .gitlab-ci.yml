@@ -1,0 +1,47 @@
+include:
+  - project: 'iti-si/terraform-projects/netscaler/terraform-utils'
+    file: '/gitlab/ci/Templates/OCI/Base.gitlab-ci.yml'
+
+stages:
+  - ci
+  - build
+
+cache:
+  paths:
+    - node_modules/
+
+lint:
+  stage: ci
+  image: node:latest
+  script:
+    - npm install
+    - npm run type-check
+    - npm run lint
+  rules:
+    - when: always
+
+test:
+  stage: ci
+  image: node:latest
+  script:
+    - npm install
+    - npm test
+  rules:
+    - when: always
+
+npmbuild:
+  stage: ci
+  image: node:latest
+  script:
+    - npm install
+    - npm run build
+  artifacts:
+    paths:
+      - dist/
+  rules:
+    - when: always
+
+dockerbuild:
+  needs:
+    - npmbuild
+  extends: .build
