@@ -45,11 +45,6 @@ spec:
             configMapKeyRef:
               name: dehydrated-frontend-config
               key: VITE_THEME_MODE
-        - name: NODE_ENV
-          valueFrom:
-            configMapKeyRef:
-              name: dehydrated-frontend-config
-              key: NODE_ENV
         # MSAL configuration (only used when VITE_ENABLE_MSAL=true)
         - name: VITE_MSAL_CLIENT_ID
           valueFrom:
