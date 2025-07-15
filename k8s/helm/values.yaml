@@ -1,0 +1,5 @@
+config:
+  VITE_API_BASE_URL: "https://dh-certs-fbt.hanse-merkur.de"
+  VITE_ENABLE_MSAL: "false"
+  VITE_THEME_NAME: "hansemerkur"
+  VITE_THEME_MODE: "light"

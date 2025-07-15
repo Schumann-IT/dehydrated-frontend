@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dehydrated-frontend-config
+  labels:
+    app: dehydrated-frontend
+data:
+  # Vite environment variables
+  VITE_API_BASE_URL: "{{ .Values.config.VITE_API_BASE_URL }}"
+  VITE_ENABLE_MSAL: "{{ .Values.config.VITE_ENABLE_MSAL }}"
+  VITE_THEME_NAME: "{{ .Values.config.VITE_THEME_NAME }}"
+  VITE_THEME_MODE: "{{ .Values.config.VITE_THEME_MODE }}"
