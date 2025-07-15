@@ -11,6 +11,3 @@ data:
   VITE_ENABLE_MSAL: "false"
   VITE_THEME_NAME: "default"
   VITE_THEME_MODE: "light"
-  
-  # Environment
-  NODE_ENV: "production" 

@@ -27,8 +27,7 @@ import { getTheme } from "@/theme";
 const isMsalEnabled = import.meta.env.VITE_ENABLE_MSAL === "true";
 
 export const App = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [mode, setMode] = useState<"light" | "dark">(
+  const [mode] = useState<"light" | "dark">(
     import.meta.env.VITE_THEME_MODE || "light",
   );
   const [themes, setThemes] = useState<{
