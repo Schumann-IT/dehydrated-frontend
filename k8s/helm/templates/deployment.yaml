@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: dehydrated-frontend
-        image: registrypro.hanse-merkur.de/iti-si/terraform-projects/netscaler/dehydrated-frontend:v0.1.0
+        image: registry.hanse-merkur.de/iti-si/dehydrated-frontend:v0.1.0
         ports:
         - containerPort: 80
         env:
