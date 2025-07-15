@@ -30,7 +30,7 @@ test:
     - when: always
 
 npmbuild:
-  stage: ci
+  stage: build
   image: node:latest
   script:
     - npm install
@@ -38,6 +38,7 @@ npmbuild:
   artifacts:
     paths:
       - dist/
+      - nginx.conf
   rules:
     - when: always
 

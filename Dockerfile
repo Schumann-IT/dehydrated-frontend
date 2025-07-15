@@ -1,4 +1,4 @@
-FROM nginx:alpine
+FROM docker.io/library/nginx:alpine
 
 # Copy built application from builder stage
 COPY dist /usr/share/nginx/html
