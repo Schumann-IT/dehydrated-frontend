@@ -12,7 +12,6 @@ import {
   Card,
   CardContent,
   Typography,
-  Grid,
   Chip,
   Box,
   Accordion,
@@ -105,8 +104,14 @@ const NetScalerCertificateInfo = ({
         <Typography variant="h6" gutterBottom>
           {environment.toUpperCase()} Environment
         </Typography>
-        <Grid container spacing={2}>
-          <Grid xs={12} md={6}>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+            gap: 2,
+          }}
+        >
+          <Box>
             <Typography variant="subtitle2" color="textSecondary">
               Certificate Details
             </Typography>
@@ -117,8 +122,8 @@ const NetScalerCertificateInfo = ({
             </Typography>
             <Typography variant="body2">Serial: {data.serial}</Typography>
             <Typography variant="body2">Version: {data.version}</Typography>
-          </Grid>
-          <Grid item xs={12} md={6}>
+          </Box>
+          <Box>
             <Typography variant="subtitle2" color="textSecondary">
               Validity
             </Typography>
@@ -143,8 +148,8 @@ const NetScalerCertificateInfo = ({
               size="small"
               sx={{ mt: 1 }}
             />
-          </Grid>
-          <Grid item xs={12}>
+          </Box>
+          <Box sx={{ gridColumn: { xs: "1", md: "1 / -1" } }}>
             <Typography variant="subtitle2" color="textSecondary">
               Certificate Types
             </Typography>
@@ -153,15 +158,15 @@ const NetScalerCertificateInfo = ({
                 <Chip key={type} label={type} size="small" variant="outlined" />
               ))}
             </Box>
-          </Grid>
-          <Grid item xs={12} md={6}>
+          </Box>
+          <Box>
             <Typography variant="subtitle2" color="textSecondary">
               Subject & Issuer
             </Typography>
             <Typography variant="body2">Subject: {data.subject}</Typography>
             <Typography variant="body2">Issuer: {data.issuer}</Typography>
-          </Grid>
-          <Grid item xs={12} md={6}>
+          </Box>
+          <Box>
             <Typography variant="subtitle2" color="textSecondary">
               Technical Details
             </Typography>
@@ -175,8 +180,8 @@ const NetScalerCertificateInfo = ({
               Signature Algorithm: {data.signaturealg}
             </Typography>
             <Typography variant="body2">SAN DNS: {data.sandns}</Typography>
-          </Grid>
-          <Grid item xs={12}>
+          </Box>
+          <Box sx={{ gridColumn: { xs: "1", md: "1 / -1" } }}>
             <Typography variant="subtitle2" color="textSecondary">
               Configuration
             </Typography>
@@ -188,8 +193,8 @@ const NetScalerCertificateInfo = ({
             </Typography>
             <Typography variant="body2">Feature: {data.feature}</Typography>
             <Typography variant="body2">Inform: {data.inform}</Typography>
-          </Grid>
-        </Grid>
+          </Box>
+        </Box>
       </CardContent>
     </Card>
   );
@@ -224,7 +229,7 @@ const OpenSSLCertificateInfo = ({ data }: { data: OpenSSLCertificateData }) => {
   ) => {
     if (sectionData?.error) {
       return (
-        <Grid item xs={12} md={6}>
+        <Box>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
             <Typography variant="subtitle2" color="textSecondary">
               {sectionName}
@@ -234,7 +239,7 @@ const OpenSSLCertificateInfo = ({ data }: { data: OpenSSLCertificateData }) => {
           <Typography variant="body2" color="error">
             {sectionData.error}
           </Typography>
-        </Grid>
+        </Box>
       );
     }
 
@@ -250,7 +255,7 @@ const OpenSSLCertificateInfo = ({ data }: { data: OpenSSLCertificateData }) => {
         : null;
 
     return (
-      <Grid item xs={12} md={6}>
+      <Box>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
           <Typography variant="subtitle2" color="textSecondary">
             {sectionName}
@@ -312,7 +317,7 @@ const OpenSSLCertificateInfo = ({ data }: { data: OpenSSLCertificateData }) => {
             </Typography>
           );
         })}
-      </Grid>
+      </Box>
     );
   };
 
@@ -322,7 +327,13 @@ const OpenSSLCertificateInfo = ({ data }: { data: OpenSSLCertificateData }) => {
         <Typography variant="h6" gutterBottom>
           OpenSSL Certificate Information
         </Typography>
-        <Grid container spacing={2}>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+            gap: 2,
+          }}
+        >
           {renderCertificateSection("Certificate", data.cert, [
             "file",
             "subject",
@@ -352,7 +363,7 @@ const OpenSSLCertificateInfo = ({ data }: { data: OpenSSLCertificateData }) => {
             "type",
             "size",
           ])}
-        </Grid>
+        </Box>
       </CardContent>
     </Card>
   );
@@ -373,8 +384,14 @@ export const DomainShow = () => (
           <Typography variant="h6" gutterBottom>
             Domain Information
           </Typography>
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+              gap: 2,
+            }}
+          >
+            <Box>
               <Typography
                 variant="subtitle2"
                 color="textSecondary"
@@ -383,8 +400,8 @@ export const DomainShow = () => (
                 Domain
               </Typography>
               <TextField source="domain" label="" />
-            </Grid>
-            <Grid item xs={12} md={6}>
+            </Box>
+            <Box>
               <Typography
                 variant="subtitle2"
                 color="textSecondary"
@@ -393,8 +410,8 @@ export const DomainShow = () => (
                 Alias
               </Typography>
               <TextField source="alias" label="" />
-            </Grid>
-            <Grid item xs={12} md={6}>
+            </Box>
+            <Box>
               <Typography
                 variant="subtitle2"
                 color="textSecondary"
@@ -403,8 +420,8 @@ export const DomainShow = () => (
                 Enabled
               </Typography>
               <BooleanField source="enabled" label="" />
-            </Grid>
-            <Grid item xs={12} md={6}>
+            </Box>
+            <Box>
               <Typography
                 variant="subtitle2"
                 color="textSecondary"
@@ -413,8 +430,8 @@ export const DomainShow = () => (
                 Comment
               </Typography>
               <TextField source="comment" label="" />
-            </Grid>
-            <Grid item xs={12}>
+            </Box>
+            <Box sx={{ gridColumn: { xs: "1", md: "1 / -1" } }}>
               <Typography
                 variant="subtitle2"
                 color="textSecondary"
@@ -436,8 +453,8 @@ export const DomainShow = () => (
                   )
                 }
               />
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </CardContent>
       </Card>
 
