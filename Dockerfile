@@ -11,7 +11,8 @@ COPY nginx.conf /etc/nginx/nginx.conf.template
 
 # Copy startup script
 COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
+COPY scripts/generate-env-config.sh /generate-env-config.sh
+RUN chmod +x /docker-entrypoint.sh /generate-env-config.sh
 
 # Expose port 8080
 EXPOSE 8080
