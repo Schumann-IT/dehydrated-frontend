@@ -6,6 +6,7 @@ metadata:
     app: dehydrated-frontend
 data:
   # Vite environment variables
+  VITE_APP_BASE_URI: "{{ .Values.config.VITE_APP_BASE_URI }}"
   VITE_API_BASE_URL: "{{ .Values.config.VITE_API_BASE_URL }}"
   VITE_ENABLE_MSAL: "{{ .Values.config.VITE_ENABLE_MSAL }}"
   VITE_THEME_NAME: "{{ .Values.config.VITE_THEME_NAME }}"
