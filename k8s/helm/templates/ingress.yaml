@@ -3,12 +3,12 @@ kind: Ingress
 metadata:
   annotations:
     ingress.citrix.com/insecure-termination: redirect
-    ingress.citrix.com/preconfigured-certkey: '{"certs": [ {"name": "*.hanse-merkur.de", "type": "sni"}] }'
+    kubernetes.io/tls-acme: "true"
   name: dehydrated-frontend
 spec:
   ingressClassName: intern
   rules:
-    - host: dh-certs-frontend-fbt.hanse-merkur.de
+    - host: dh-certs.stg.hcp.hanse-merkur.de
       http:
         paths:
           - backend:
@@ -20,6 +20,6 @@ spec:
             pathType: Prefix
   tls:
     - hosts:
-        - dh-certs-frontend-fbt.hanse-merkur.de
+        - dh-certs.stg.hcp.hanse-merkur.de
       secretName: dehydrated-frontend
 

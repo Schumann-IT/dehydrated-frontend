@@ -1,5 +1,5 @@
 config:
-  VITE_APP_BASE_URI: "https://dh-certs-frontend-fbt.hanse-merkur.de"
+  VITE_APP_BASE_URI: "https://dh-certs.stg.hcp.hanse-merkur.de"
   VITE_API_BASE_URL: "https://dh-certs-fbt.hanse-merkur.de"
   VITE_ENABLE_MSAL: "false"
   VITE_THEME_NAME: "hansemerkur"
