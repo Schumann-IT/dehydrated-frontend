@@ -2,15 +2,6 @@ import "@testing-library/jest-dom";
 import { vi, beforeAll, afterAll } from "vitest";
 import React from "react";
 
-// Mock environment variables
-vi.mock("import.meta.env", () => ({
-  VITE_ENABLE_MSAL: "false",
-  VITE_THEME_MODE: "light",
-  VITE_THEME_NAME: "default",
-  VITE_API_BASE_URL: "http://localhost:8080",
-  VITE_APP_TITLE: "Dehydrated Frontend",
-}));
-
 // Mock console methods to reduce noise in tests
 const originalConsoleError = console.error;
 const originalConsoleWarn = console.warn;

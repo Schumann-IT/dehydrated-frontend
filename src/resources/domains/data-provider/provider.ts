@@ -22,10 +22,12 @@ import {
 import { IPublicClientApplication } from "@azure/msal-browser";
 import { ApiV1DomainsGetRequest } from "./client/apis/DomainsApi";
 
+import { getEnvVar } from "@/utils/env";
+
 // Create a function to get the API client with the given token
 const getApiClient = (token: string | null) => {
   const config = new Configuration({
-    basePath: import.meta.env.VITE_API_BASE_URL,
+    basePath: getEnvVar("VITE_API_BASE_URL") || "",
     headers: token
       ? {
           Authorization: `Bearer ${token}`,
@@ -51,7 +53,7 @@ export const create = (
         return null;
       }
 
-      const apiIdentifier = import.meta.env.VITE_DEHYDRATED_API_IDENTIFIER;
+      const apiIdentifier = getEnvVar("VITE_DEHYDRATED_API_IDENTIFIER") || "";
 
       // Format the API scope correctly
       const apiScope = apiIdentifier.endsWith("/")

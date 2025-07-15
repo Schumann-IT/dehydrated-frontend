@@ -1,11 +1,12 @@
 import { msalAuthProvider } from "ra-auth-msal";
 import { PublicClientApplication } from "@azure/msal-browser";
 import { msalConfig } from "@/authConfig";
+import { getEnvVar } from "@/utils/env";
 
 export * from "./components";
 
 // Check if MSAL is enabled via environment variable
-const isMsalEnabled = import.meta.env.VITE_ENABLE_MSAL === "true";
+const isMsalEnabled = getEnvVar("VITE_ENABLE_MSAL") === "true";
 
 export const myMSALObj = isMsalEnabled
   ? new PublicClientApplication(msalConfig)

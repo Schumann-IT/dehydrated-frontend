@@ -10,7 +10,40 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     sourcemap: mode === "development",
-    chunkSizeWarningLimit: 1000, // Increase warning limit to 1MB
+    chunkSizeWarningLimit: 2000, // Increase warning limit to 2MB
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          // Split vendor libraries into separate chunks
+          if (id.includes('node_modules')) {
+            // Group all vendor libraries into a single vendor chunk
+            return 'vendor';
+          }
+        },
+        // Optimize chunk naming
+        chunkFileNames: 'js/[name]-[hash].js',
+        entryFileNames: 'js/[name]-[hash].js',
+        assetFileNames: (assetInfo) => {
+          const info = assetInfo.name?.split('.') || [];
+          const ext = info[info.length - 1];
+          if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(ext)) {
+            return `img/[name]-[hash][extname]`;
+          }
+          if (/woff2?|eot|ttf|otf/i.test(ext)) {
+            return `fonts/[name]-[hash][extname]`;
+          }
+          return `assets/[name]-[hash][extname]`;
+        },
+      },
+    },
+    // Enable minification and tree shaking
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: mode === 'production',
+        drop_debugger: mode === 'production',
+      },
+    },
   },
   // This allows to have sourcemaps in production. They are not loaded unless you open the devtools
   // Remove this line if you don't need to debug react-admin in production
@@ -19,6 +52,20 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
       ...getAliasesToDebugInProduction(),
     },
+  },
+  // Optimize dependencies
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      'react-admin',
+      'ra-core',
+      'ra-ui-materialui',
+      '@azure/msal-browser',
+      '@azure/msal-react',
+      '@mui/material',
+      '@mui/icons-material',
+    ],
   },
 }));
 

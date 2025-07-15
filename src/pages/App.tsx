@@ -1,3 +1,4 @@
+import React from "react";
 import { Admin, Resource } from "react-admin";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LoginPage } from "ra-auth-msal";
@@ -8,11 +9,12 @@ import {
   myMSALObj,
   provider as msalProvider,
 } from "@/auth";
-import { dataProvider } from "@/dataProvider.ts";
+import { dataProvider } from "@/dataProvider";
 import { Theme, ThemeProvider } from "@mui/material";
 import { CssBaseline } from "@mui/material";
 import { useEffect, useState, Suspense, lazy } from "react";
 import { getTheme } from "@/theme";
+import { getEnvVar } from "@/utils/env";
 
 // Lazy load components
 const Dashboard = lazy(() =>
@@ -63,12 +65,12 @@ const LoadingSpinner = () => (
   </div>
 );
 
-// Check if MSAL is enabled
-const isMsalEnabled = import.meta.env.VITE_ENABLE_MSAL === "true";
+// Check if MSAL is enabled via environment variable
+const isMsalEnabled = getEnvVar("VITE_ENABLE_MSAL") === "true";
 
 export const App = () => {
   const [mode] = useState<"light" | "dark">(
-    import.meta.env.VITE_THEME_MODE || "light",
+    (getEnvVar("VITE_THEME_MODE") as "light" | "dark") || "light",
   );
   const [themes, setThemes] = useState<{
     light: Theme;
@@ -79,7 +81,7 @@ export const App = () => {
     const loadThemes = async () => {
       try {
         const loadedThemes = await getTheme(
-          import.meta.env.VITE_THEME_NAME || "default",
+          getEnvVar("VITE_THEME_NAME") || "default",
         );
         setThemes(loadedThemes);
       } catch (error) {
@@ -114,6 +116,11 @@ export const App = () => {
     return <>{children}</>;
   };
 
+  // Create the data provider with MSAL instance if enabled
+  const dataProviderWithAuth = dataProvider(
+    isMsalEnabled && myMSALObj ? myMSALObj : undefined,
+  );
+
   return (
     <ThemeProvider theme={themes[mode]}>
       <CssBaseline />
@@ -130,7 +137,7 @@ export const App = () => {
                 element={
                   <ConditionalProtectedRoute>
                     <Admin
-                      dataProvider={dataProvider(myMSALObj || undefined)}
+                      dataProvider={dataProviderWithAuth}
                       authProvider={msalProvider}
                       loginPage={isMsalEnabled ? LoginPage : undefined}
                       dashboard={Dashboard}
