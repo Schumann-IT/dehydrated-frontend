@@ -55,12 +55,13 @@ interface OpenSSLCertificateSection {
   error?: string;
   file?: string;
   subject?: string;
+  dns_names?: string[];
   issuer?: string;
   not_before?: string;
   not_after?: string;
   type?: string;
   size?: number;
-  [key: string]: string | number | undefined;
+  [key: string]: string | string[] | number | undefined;
 }
 
 interface OpenSSLCertificateData {
@@ -105,7 +106,7 @@ const NetScalerCertificateInfo = ({
           {environment.toUpperCase()} Environment
         </Typography>
         <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Typography variant="subtitle2" color="textSecondary">
               Certificate Details
             </Typography>
@@ -275,10 +276,39 @@ const OpenSSLCertificateInfo = ({ data }: { data: OpenSSLCertificateData }) => {
               </Typography>
             );
           }
+
+          const value = sectionData?.[field];
+          if (Array.isArray(value)) {
+            return (
+              <Box key={field}>
+                <Typography variant="body2" component="span">
+                  {field === "dns_names"
+                    ? "DNS Names"
+                    : field.charAt(0).toUpperCase() + field.slice(1)}
+                  :{" "}
+                </Typography>
+                <Box
+                  sx={{ display: "flex", gap: 1, flexWrap: "wrap", mt: 0.5 }}
+                >
+                  {value.map((item, index) => (
+                    <Chip
+                      key={index}
+                      label={item}
+                      size="small"
+                      variant="outlined"
+                    />
+                  ))}
+                </Box>
+              </Box>
+            );
+          }
+
           return (
             <Typography key={field} variant="body2">
-              {field.charAt(0).toUpperCase() + field.slice(1)}:{" "}
-              {sectionData?.[field]}
+              {field === "dns_names"
+                ? "DNS Names"
+                : field.charAt(0).toUpperCase() + field.slice(1)}
+              : {value}
             </Typography>
           );
         })}
@@ -296,6 +326,7 @@ const OpenSSLCertificateInfo = ({ data }: { data: OpenSSLCertificateData }) => {
           {renderCertificateSection("Certificate", data.cert, [
             "file",
             "subject",
+            "dns_names",
             "issuer",
             "not_before",
             "not_after",
@@ -303,6 +334,7 @@ const OpenSSLCertificateInfo = ({ data }: { data: OpenSSLCertificateData }) => {
           {renderCertificateSection("Chain Certificate", data.chain, [
             "file",
             "subject",
+            "dns_names",
             "issuer",
             "not_before",
             "not_after",
@@ -310,6 +342,7 @@ const OpenSSLCertificateInfo = ({ data }: { data: OpenSSLCertificateData }) => {
           {renderCertificateSection("Full Chain", data.fullchain, [
             "file",
             "subject",
+            "dns_names",
             "issuer",
             "not_before",
             "not_after",
@@ -446,17 +479,26 @@ export const DomainShow = () => (
                         />
                       ) : (
                         <>
-                          {record.metadata.netscaler.dev && (
-                            <NetScalerCertificateInfo
-                              data={record.metadata.netscaler.dev}
-                              environment="dev"
-                            />
-                          )}
-                          {record.metadata.netscaler.prod && (
-                            <NetScalerCertificateInfo
-                              data={record.metadata.netscaler.prod}
-                              environment="prod"
-                            />
+                          {Object.entries(record.metadata.netscaler).map(
+                            ([environment, envData]) => {
+                              // Skip the error field as it's handled above
+                              if (environment === "error") return null;
+
+                              // Skip if envData is not an object
+                              if (
+                                typeof envData !== "object" ||
+                                envData === null
+                              )
+                                return null;
+
+                              return (
+                                <NetScalerCertificateInfo
+                                  key={environment}
+                                  data={envData as NetScalerCertificateData}
+                                  environment={environment}
+                                />
+                              );
+                            },
                           )}
                         </>
                       )}

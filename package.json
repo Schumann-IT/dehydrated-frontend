@@ -3,8 +3,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "serve": "vite preview",
+    "build": "rm -f dist/env-config.js && vite build",
+    "serve": "node scripts/generate-env-config.js && vite preview",
     "type-check": "tsc --noEmit",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx ./src",
     "lint-fix": "eslint --fix --ext .js,.jsx,.ts,.tsx ./src",
@@ -14,7 +14,8 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage --reporter=verbose",
     "test:watch": "vitest --watch",
-    "test:run": "vitest --run"
+    "test:run": "vitest --run",
+    "pre-commit": "npm run gen:domains-client && npm run format && npm run lint-fix && npm run test && npm run build"
   },
   "dependencies": {
     "@azure/msal-react": "^3.0.15",
@@ -43,6 +44,7 @@
     "@vitejs/plugin-react": "^4.0.1",
     "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^3.2.4",
+    "dotenv": "^17.2.0",
     "eslint": "^9.23.0",
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-prettier": "^5.2.5",

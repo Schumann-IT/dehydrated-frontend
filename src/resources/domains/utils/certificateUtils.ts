@@ -1,11 +1,33 @@
 import { CheckCircle, Error, Warning } from "@mui/icons-material";
 import React from "react";
 
+// Define types for status objects
+interface CertificateStatus {
+  status:
+    | "valid"
+    | "expired"
+    | "expiring_soon"
+    | "not_yet_valid"
+    | "unknown"
+    | "error";
+  icon: React.ReactElement;
+  color: "success" | "error" | "warning" | "default";
+  message?: string;
+}
+
+interface OpenSSLStatus extends CertificateStatus {
+  type: "cert" | "chain" | "fullchain";
+}
+
+interface NetScalerStatus extends CertificateStatus {
+  environment: string;
+}
+
 // Helper function to check certificate validity
 export const checkCertificateValidity = (
   notBefore: string,
   notAfter: string,
-) => {
+): Omit<CertificateStatus, "message"> => {
   try {
     const now = new Date();
     const beforeDate = new Date(notBefore);
@@ -13,13 +35,13 @@ export const checkCertificateValidity = (
 
     if (now < beforeDate) {
       return {
-        status: "not_yet_valid",
+        status: "not_yet_valid" as const,
         icon: React.createElement(Warning, { color: "warning" }),
         color: "warning" as const,
       };
     } else if (now > afterDate) {
       return {
-        status: "expired",
+        status: "expired" as const,
         icon: React.createElement(Error, { color: "error" }),
         color: "error" as const,
       };
@@ -30,13 +52,13 @@ export const checkCertificateValidity = (
 
       if (now <= afterDate && afterDate <= thirtyDaysFromNow) {
         return {
-          status: "expiring_soon",
+          status: "expiring_soon" as const,
           icon: React.createElement(Warning, { color: "warning" }),
           color: "warning" as const,
         };
       } else {
         return {
-          status: "valid",
+          status: "valid" as const,
           icon: React.createElement(CheckCircle, { color: "success" }),
           color: "success" as const,
         };
@@ -44,7 +66,7 @@ export const checkCertificateValidity = (
     }
   } catch {
     return {
-      status: "unknown",
+      status: "unknown" as const,
       icon: React.createElement(Error, { color: "error" }),
       color: "error" as const,
     };
@@ -101,18 +123,15 @@ interface OpenSSLMetadata {
   };
 }
 
+interface NetScalerEnvironment {
+  error?: string;
+  clientcertnotbefore?: string;
+  clientcertnotafter?: string;
+}
+
 interface NetScalerMetadata {
   error?: string;
-  dev?: {
-    error?: string;
-    clientcertnotbefore?: string;
-    clientcertnotafter?: string;
-  };
-  prod?: {
-    error?: string;
-    clientcertnotbefore?: string;
-    clientcertnotafter?: string;
-  };
+  [environment: string]: NetScalerEnvironment | string | undefined;
 }
 
 interface MetadataWithOpenSSL {
@@ -124,20 +143,22 @@ interface MetadataWithNetScaler {
 }
 
 // Helper function to get OpenSSL certificate status
-export const getOpenSSLStatus = (metadata: object | undefined) => {
+export const getOpenSSLStatus = (
+  metadata: object | undefined,
+): OpenSSLStatus[] | null => {
   if (!metadata || typeof metadata !== "object" || !("openssl" in metadata))
     return null;
 
   const openssl = (metadata as MetadataWithOpenSSL).openssl;
   if (!openssl) return null;
 
-  const statuses = [];
+  const statuses: OpenSSLStatus[] = [];
 
   // Check certificate
   if (openssl.cert?.error) {
     statuses.push({
-      type: "cert",
-      status: "error",
+      type: "cert" as const,
+      status: "error" as const,
       message: openssl.cert.error,
       icon: React.createElement(Error, { color: "error" }),
       color: "error" as const,
@@ -147,14 +168,14 @@ export const getOpenSSLStatus = (metadata: object | undefined) => {
       openssl.cert.not_before,
       openssl.cert.not_after,
     );
-    statuses.push({ type: "cert", ...validity });
+    statuses.push({ type: "cert" as const, ...validity });
   }
 
   // Check chain
   if (openssl.chain?.error) {
     statuses.push({
-      type: "chain",
-      status: "error",
+      type: "chain" as const,
+      status: "error" as const,
       message: openssl.chain.error,
       icon: React.createElement(Error, { color: "error" }),
       color: "error" as const,
@@ -164,14 +185,14 @@ export const getOpenSSLStatus = (metadata: object | undefined) => {
       openssl.chain.not_before,
       openssl.chain.not_after,
     );
-    statuses.push({ type: "chain", ...validity });
+    statuses.push({ type: "chain" as const, ...validity });
   }
 
   // Check fullchain
   if (openssl.fullchain?.error) {
     statuses.push({
-      type: "fullchain",
-      status: "error",
+      type: "fullchain" as const,
+      status: "error" as const,
       message: openssl.fullchain.error,
       icon: React.createElement(Error, { color: "error" }),
       color: "error" as const,
@@ -181,27 +202,29 @@ export const getOpenSSLStatus = (metadata: object | undefined) => {
       openssl.fullchain.not_before,
       openssl.fullchain.not_after,
     );
-    statuses.push({ type: "fullchain", ...validity });
+    statuses.push({ type: "fullchain" as const, ...validity });
   }
 
   return statuses;
 };
 
 // Helper function to get NetScaler certificate status
-export const getNetScalerStatus = (metadata: object | undefined) => {
+export const getNetScalerStatus = (
+  metadata: object | undefined,
+): NetScalerStatus[] | null => {
   if (!metadata || typeof metadata !== "object" || !("netscaler" in metadata))
     return null;
 
   const netscaler = (metadata as MetadataWithNetScaler).netscaler;
   if (!netscaler) return null;
 
-  const statuses = [];
+  const statuses: NetScalerStatus[] = [];
 
   // Check if netscaler has a top-level error
   if (netscaler.error) {
     statuses.push({
       environment: "netscaler",
-      status: "error",
+      status: "error" as const,
       message: netscaler.error,
       icon: React.createElement(Error, { color: "error" }),
       color: "error" as const,
@@ -209,45 +232,35 @@ export const getNetScalerStatus = (metadata: object | undefined) => {
     return statuses;
   }
 
-  // Check dev environment
-  if (netscaler.dev?.error) {
-    statuses.push({
-      environment: "dev",
-      status: "error",
-      message: netscaler.dev.error,
-      icon: React.createElement(Error, { color: "error" }),
-      color: "error" as const,
-    });
-  } else if (
-    netscaler.dev?.clientcertnotbefore &&
-    netscaler.dev?.clientcertnotafter
-  ) {
-    const validity = checkCertificateValidity(
-      netscaler.dev.clientcertnotbefore,
-      netscaler.dev.clientcertnotafter,
-    );
-    statuses.push({ environment: "dev", ...validity });
-  }
+  // Check all environments dynamically
+  Object.entries(netscaler).forEach(([environment, envData]) => {
+    // Skip the error field as it's handled above
+    if (environment === "error") return;
 
-  // Check prod environment
-  if (netscaler.prod?.error) {
-    statuses.push({
-      environment: "prod",
-      status: "error",
-      message: netscaler.prod.error,
-      icon: React.createElement(Error, { color: "error" }),
-      color: "error" as const,
-    });
-  } else if (
-    netscaler.prod?.clientcertnotbefore &&
-    netscaler.prod?.clientcertnotafter
-  ) {
-    const validity = checkCertificateValidity(
-      netscaler.prod.clientcertnotbefore,
-      netscaler.prod.clientcertnotafter,
-    );
-    statuses.push({ environment: "prod", ...validity });
-  }
+    // Skip if envData is not an object
+    if (typeof envData !== "object" || envData === null) return;
+
+    const environmentData = envData as NetScalerEnvironment;
+
+    if (environmentData.error) {
+      statuses.push({
+        environment,
+        status: "error" as const,
+        message: environmentData.error,
+        icon: React.createElement(Error, { color: "error" }),
+        color: "error" as const,
+      });
+    } else if (
+      environmentData.clientcertnotbefore &&
+      environmentData.clientcertnotafter
+    ) {
+      const validity = checkCertificateValidity(
+        environmentData.clientcertnotbefore,
+        environmentData.clientcertnotafter,
+      );
+      statuses.push({ environment, ...validity });
+    }
+  });
 
   return statuses;
 };

@@ -1,4 +1,10 @@
-import { Datagrid, TextField, BooleanField, FunctionField } from "react-admin";
+import {
+  Datagrid,
+  TextField,
+  BooleanField,
+  FunctionField,
+  RaRecord,
+} from "react-admin";
 import { useEffect, useState } from "react";
 import { Box, Chip, Typography, CircularProgress } from "@mui/material";
 import {
@@ -79,6 +85,16 @@ const useAllDomains = () => {
 
 export const InvalidDomainList = () => {
   const { domains, loading, error } = useAllDomains();
+
+  const handleRowClick = (
+    _id: string | number,
+    _resource: string,
+    record: RaRecord,
+  ) => {
+    // Return the path to the domains resource show page instead of invalid-domains
+    const domain = (record as ModelDomainEntry).domain || "";
+    return `/admin/domains/${encodeURIComponent(domain)}/show`;
+  };
 
   if (loading) {
     return (
@@ -176,7 +192,7 @@ export const InvalidDomainList = () => {
           <Datagrid
             data={records}
             bulkActionButtons={false}
-            rowClick={undefined}
+            rowClick={handleRowClick}
           >
             <TextField source="domain" label="Domain" />
             <TextField source="alias" label="Alias" sortable={false} />

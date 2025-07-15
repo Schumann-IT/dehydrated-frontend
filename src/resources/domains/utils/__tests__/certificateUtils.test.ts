@@ -295,4 +295,46 @@ describe("getNetScalerStatus", () => {
     expect(result!.map((r) => r.environment)).toEqual(["dev", "prod"]);
     expect(result!.every((r) => r.status === "valid")).toBe(true);
   });
+
+  it("should handle arbitrary environment names", () => {
+    const now = new Date();
+    const notBefore = new Date(
+      now.getTime() - 24 * 60 * 60 * 1000,
+    ).toISOString();
+    const notAfter = new Date(
+      now.getTime() + 365 * 24 * 60 * 60 * 1000,
+    ).toISOString();
+
+    const metadata = {
+      netscaler: {
+        staging: {
+          clientcertnotbefore: notBefore,
+          clientcertnotafter: notAfter,
+        },
+        testing: {
+          clientcertnotbefore: notBefore,
+          clientcertnotafter: notAfter,
+        },
+        uat: {
+          error: "UAT environment error",
+        },
+      },
+    };
+
+    const result = getNetScalerStatus(metadata);
+
+    expect(result).toHaveLength(3);
+    expect(result!.map((r) => r.environment)).toEqual([
+      "staging",
+      "testing",
+      "uat",
+    ]);
+    expect(result!.find((r) => r.environment === "staging")?.status).toBe(
+      "valid",
+    );
+    expect(result!.find((r) => r.environment === "testing")?.status).toBe(
+      "valid",
+    );
+    expect(result!.find((r) => r.environment === "uat")?.status).toBe("error");
+  });
 });

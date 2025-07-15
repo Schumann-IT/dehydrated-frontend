@@ -91,7 +91,7 @@ export const create = (
       };
 
       // Only apply search if it's provided and we're sorting by domain
-      if (searchTerm && field === "domain") {
+      if (searchTerm && (field === "domain" || field === "id")) {
         apiParams.search = searchTerm;
       }
 
