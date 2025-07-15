@@ -4,9 +4,22 @@ import { getEnvVar, type EnvConfig } from "../env";
 describe("getEnvVar", () => {
   beforeEach(() => {
     // Reset window object
-    if (typeof global !== "undefined") {
-      (global as { window?: Window }).window = undefined;
-    }
+    delete (global as { window?: Window }).window;
+
+    // Mock import.meta.env for testing
+    (
+      import.meta as unknown as {
+        env: {
+          DEV: boolean;
+          VITE_API_BASE_URL: string;
+          VITE_APP_BASE_URI: string;
+        };
+      }
+    ).env = {
+      DEV: true,
+      VITE_API_BASE_URL: "https://test-api.example.com",
+      VITE_APP_BASE_URI: "https://test-app.example.com",
+    };
   });
 
   it("should return runtime environment variable when available", () => {
@@ -31,14 +44,21 @@ describe("getEnvVar", () => {
   });
 
   it("should handle missing window.ENV_CONFIG gracefully", () => {
-    // Set window but without ENV_CONFIG
+    // Set window but ensure ENV_CONFIG is truly undefined
     const mockWindow = {} as Window;
     (global as { window?: Window }).window = mockWindow;
+    delete (window as { ENV_CONFIG?: EnvConfig }).ENV_CONFIG;
 
-    const result = getEnvVar("VITE_APP_BASE_URI");
-    if (import.meta.env.DEV) {
+    const mockEnv = {
+      DEV: true,
+      VITE_API_BASE_URL: "https://test-api.example.com",
+      VITE_APP_BASE_URI: "https://test-app.example.com",
+    };
+
+    const result = getEnvVar("VITE_APP_BASE_URI", mockEnv);
+    if (mockEnv.DEV) {
       // In dev, fallback to build-time value
-      expect(result).toBe(import.meta.env.VITE_APP_BASE_URI);
+      expect(result).toBe("https://test-app.example.com");
     } else {
       // In prod, should be undefined
       expect(result).toBeUndefined();
@@ -60,7 +80,12 @@ describe("getEnvVar", () => {
   it("should work in development mode with build-time fallback", () => {
     // Test that the function works in development mode
     // It should return the actual build-time value if available
-    const result = getEnvVar("VITE_API_BASE_URL");
+    const mockEnv = {
+      DEV: true,
+      VITE_API_BASE_URL: "https://test-api.example.com",
+      VITE_APP_BASE_URI: "https://test-app.example.com",
+    };
+    const result = getEnvVar("VITE_API_BASE_URL", mockEnv);
     // Just check that it returns something (either runtime or build-time)
     expect(typeof result).toBe("string");
   });

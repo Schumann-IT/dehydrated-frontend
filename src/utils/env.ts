@@ -18,16 +18,19 @@ declare global {
 }
 
 // Get environment variable with fallback to build-time in development
-export const getEnvVar = (key: keyof EnvConfig): string | undefined => {
+export const getEnvVar = (
+  key: keyof EnvConfig,
+  envOverride?: Partial<EnvConfig> & { DEV?: boolean },
+): string | undefined => {
+  const env = envOverride || import.meta.env;
   // In development, try runtime first, then fallback to build-time
-  if (import.meta.env.DEV) {
+  if (env.DEV) {
     // First try runtime environment variable from window.ENV_CONFIG
     if (typeof window !== "undefined" && window.ENV_CONFIG) {
       return window.ENV_CONFIG[key];
     }
-
     // Fallback to build-time environment variable in development
-    return import.meta.env[key];
+    return env[key];
   }
 
   // In production, only use runtime environment variable from window.ENV_CONFIG
