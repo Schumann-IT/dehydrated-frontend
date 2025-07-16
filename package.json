@@ -3,7 +3,7 @@
   "type": "module",
   "scripts": {
     "clean": "rm -rf dist && rm -rf node_modules",
-    "prepare": "npm run gen:domains-client",gi
+    "prepare": "npm run gen:domains-client",
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
