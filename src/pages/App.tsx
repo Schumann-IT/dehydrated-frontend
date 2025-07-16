@@ -144,6 +144,8 @@ export const App = () => {
                       basename="/admin"
                       lightTheme={themes["light"]}
                       darkTheme={themes["dark"]}
+                      disableTelemetry={true}
+                      a
                     >
                       <Resource
                         name="domains"
