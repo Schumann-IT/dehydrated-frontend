@@ -11,6 +11,7 @@ export default defineConfig([
     "**/node_modules",
     "**/dist",
     "src/theme/modules.ts",
+    "src/resources/domains/data-provider/client",
   ]),
   {
     name: "eslint-js-recommended-rules",
