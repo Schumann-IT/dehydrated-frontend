@@ -1,7 +1,8 @@
 #!/bin/sh
 set -e
 
-cat <<EOF > /usr/share/nginx/html/env-config.js
+mkdir -p /etc/env
+cat <<EOF > /etc/env/env-config.js
 window.ENV_CONFIG = {
     VITE_APP_BASE_URI: "${VITE_APP_BASE_URI}",
     VITE_API_BASE_URL: "${VITE_API_BASE_URL}",
