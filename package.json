@@ -3,7 +3,6 @@
   "type": "module",
   "scripts": {
     "clean": "rm -rf dist && rm -rf node_modules",
-    "prepare": "npm run gen:domains-client",
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
@@ -17,7 +16,7 @@
     "test:coverage": "vitest --coverage --reporter=verbose",
     "test:watch": "vitest --watch",
     "test:run": "vitest --run",
-    "pre-commit": "npm run clean && npm run prepare && npm run format && npm run lint-fix && npm run test && npm run build"
+    "pre-commit": "npm run clean && npm install && npm run gen:domains-client && npm run format && npm run lint-fix && npm run test && npm run build"
   },
   "dependencies": {
     "@azure/msal-react": "^3.0.15",
