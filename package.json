@@ -19,7 +19,7 @@
     "pre-commit": "npm run clean && npm install && npm run gen:domains-client && npm run format && npm run lint-fix && npm run test && npm run build"
   },
   "dependencies": {
-    "@azure/msal-react": "^3.0.15",
+    "@azure/msal-react": "^3.0.19",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^7.2.0",
